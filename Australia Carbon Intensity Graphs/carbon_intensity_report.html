@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="scroll-behavior:smooth;">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,14 +10,14 @@
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; color: #333; line-height: 1.6; }
   .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
   h1 { font-size: 1.8rem; margin-bottom: 8px; color: #1a1a2e; }
-  h2 { font-size: 1.3rem; margin: 36px 0 12px; color: #1a1a2e; border-bottom: 2px solid #e0e0e0; padding-bottom: 6px; }
+  h2 { font-size: 1.3rem; margin: 36px 0 12px; color: #1a1a2e; border-bottom: 2px solid #e0e0e0; padding-bottom: 6px; scroll-margin-top: 60px; }
   h3 { font-size: 1.1rem; margin: 20px 0 8px; color: #444; }
   p, li { font-size: 0.95rem; }
   .subtitle { color: #666; margin-bottom: 24px; font-size: 0.95rem; }
   .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 20px 0; }
-  .chart-card { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .chart-card { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: relative; transition: all 0.3s ease; }
   .chart-card.full-width { grid-column: 1 / -1; }
-  .chart-card h3 { margin-top: 0; }
+  .chart-card h3 { margin-top: 0; padding-right: 36px; }
   canvas { max-height: 380px; }
   .section-text { background: #fff; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 16px 0; }
   .section-text ul { padding-left: 20px; margin: 8px 0; }
@@ -39,11 +39,136 @@
   .stat-row { display: flex; flex-wrap: wrap; margin: 16px 0; }
   .legend-note { font-size: 0.8rem; color: #666; margin-top: 6px; }
   sup { font-size: 0.7em; }
-  @media (max-width: 768px) { .chart-grid { grid-template-columns: 1fr; } }
+
+  /* --- Sticky nav bar --- */
+  .section-nav { position: sticky; top: 0; z-index: 100; background: #1a1a2e; margin: 0 -24px; padding: 0 24px; display: flex; align-items: center; }
+  .section-nav-inner { display: flex; gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; flex: 1; min-width: 0; }
+  .section-nav-inner::-webkit-scrollbar { display: none; }
+  .section-nav a { color: #ccc; text-decoration: none; font-size: 0.78rem; padding: 10px 14px; white-space: nowrap; transition: color 0.2s, background 0.2s; border-bottom: 2px solid transparent; }
+  .section-nav a:hover, .section-nav a.active { color: #fff; background: rgba(255,255,255,0.08); border-bottom-color: #4CAF50; }
+  .toc-toggle { background: none; border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; color: #ccc; cursor: pointer; padding: 5px 10px; font-size: 0.75rem; white-space: nowrap; transition: all 0.2s; margin-left: 8px; flex-shrink: 0; display: flex; align-items: center; gap: 5px; }
+  .toc-toggle:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.4); }
+  .toc-toggle svg { width: 14px; height: 14px; }
+
+  /* --- TOC slide-out panel --- */
+  .toc-panel { display: none; position: fixed; top: 0; right: 0; bottom: 0; width: 340px; max-width: 90vw; background: #fff; z-index: 1002; box-shadow: -4px 0 24px rgba(0,0,0,0.15); overflow-y: auto; animation: tocSlideIn 0.25s ease; }
+  .toc-panel.open { display: block; }
+  @keyframes tocSlideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+  .toc-backdrop { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); z-index: 1001; }
+  .toc-backdrop.open { display: block; }
+  .toc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 14px; border-bottom: 1px solid #e0e0e0; position: sticky; top: 0; background: #fff; z-index: 1; }
+  .toc-header h3 { margin: 0; font-size: 1rem; color: #1a1a2e; }
+  .toc-close { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #666; padding: 4px 8px; border-radius: 4px; line-height: 1; }
+  .toc-close:hover { background: #f0f0f0; color: #333; }
+  .toc-list { list-style: none; padding: 8px 0; margin: 0; }
+  .toc-list a { display: flex; align-items: baseline; gap: 10px; padding: 10px 20px; color: #333; text-decoration: none; font-size: 0.88rem; transition: background 0.15s; border-left: 3px solid transparent; }
+  .toc-list a:hover { background: #f5f7ff; border-left-color: #4CAF50; }
+  .toc-list a.active { background: #eef5ee; border-left-color: #4CAF50; font-weight: 600; }
+  .toc-num { color: #999; font-size: 0.78rem; font-weight: 600; min-width: 22px; }
+  .toc-group { padding: 12px 20px 4px; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: #999; font-weight: 600; margin-top: 4px; }
+
+  /* --- Expand / fullscreen button on chart cards --- */
+  .chart-expand-btn { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border: none; border-radius: 6px; background: rgba(0,0,0,0.06); color: #555; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s, color 0.2s; z-index: 10; }
+  .chart-expand-btn:hover { background: rgba(0,0,0,0.12); color: #1a1a2e; }
+  .chart-expand-btn svg { width: 18px; height: 18px; }
+
+  /* Fullscreen overlay */
+  .chart-card.fullscreen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000; border-radius: 0; margin: 0; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; }
+  .chart-card.fullscreen canvas { max-height: none; flex: 1; min-height: 0; }
+  .chart-card.fullscreen .chart-expand-btn { top: 16px; right: 16px; background: rgba(0,0,0,0.1); }
+  .chart-card.fullscreen .legend-note { flex-shrink: 0; }
+  .chart-fullscreen-backdrop { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 999; }
+  .chart-fullscreen-backdrop.visible { display: block; }
+
+  /* --- Mobile responsiveness --- */
+  @media (max-width: 768px) {
+    .container { padding: 12px; }
+    h1 { font-size: 1.4rem; }
+    h2 { font-size: 1.15rem; margin: 24px 0 10px; }
+    h3 { font-size: 1rem; }
+    p, li { font-size: 0.9rem; }
+    .subtitle { font-size: 0.85rem; margin-bottom: 16px; }
+    .chart-grid { grid-template-columns: 1fr; gap: 16px; }
+    .chart-card { padding: 14px; }
+    canvas { max-height: 280px; }
+    .section-text { padding: 16px; }
+    .section-text ul { padding-left: 16px; }
+    .key-stat { padding: 10px 14px; margin: 4px 6px 4px 0; }
+    .key-stat .number { font-size: 1.3rem; }
+    .key-stat .label { font-size: 0.7rem; }
+    table { font-size: 0.75rem; }
+    th, td { padding: 4px 6px; }
+    .section-nav { margin: 0 -12px; padding: 0 12px; }
+    .section-nav a { font-size: 0.72rem; padding: 8px 10px; }
+    .section-nav-inner a { display: none; }
+    .section-nav-inner a.active { display: block; }
+    .toc-toggle { margin-left: auto; }
+    .chart-card.fullscreen { padding: 14px; }
+    .confirmed, .warning { font-size: 0.82rem; padding: 10px 14px; }
+  }
+
+  @media (max-width: 480px) {
+    .container { padding: 8px; }
+    h1 { font-size: 1.2rem; }
+    .stat-row { justify-content: center; }
+    .key-stat { flex: 1 1 calc(50% - 12px); min-width: 120px; }
+    canvas { max-height: 240px; }
+    .chart-card { padding: 10px; }
+    .section-nav { margin: 0 -8px; padding: 0 8px; }
+  }
 </style>
 </head>
 <body>
+<div class="chart-fullscreen-backdrop" id="fullscreenBackdrop"></div>
 <div class="container">
+
+<nav class="section-nav" id="sectionNav">
+  <div class="section-nav-inner">
+    <a href="#sec1">Trends</a>
+    <a href="#sec2">National</a>
+    <a href="#sec3">Gen Mix</a>
+    <a href="#sec4">By Fuel</a>
+    <a href="#sec5">Fuel Factors</a>
+    <a href="#sec6">LCOE</a>
+    <a href="#sec7">LCOE History</a>
+    <a href="#sec8">Storage</a>
+    <a href="#sec9">Heating</a>
+    <a href="#sec10">Data</a>
+    <a href="#sec11">Method</a>
+    <a href="#sec12">Citations</a>
+  </div>
+  <button class="toc-toggle" id="tocToggle" aria-label="Table of contents">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    TOC
+  </button>
+</nav>
+
+<div class="toc-backdrop" id="tocBackdrop"></div>
+<div class="toc-panel" id="tocPanel">
+  <div class="toc-header">
+    <h3>Table of Contents</h3>
+    <button class="toc-close" id="tocClose" aria-label="Close">&times;</button>
+  </div>
+  <ul class="toc-list">
+    <li class="toc-group">Emissions Analysis</li>
+    <li><a href="#sec1" class="toc-link"><span class="toc-num">1</span> Grid Emissions Intensity Trends by State</a></li>
+    <li><a href="#sec2" class="toc-link"><span class="toc-num">2</span> National Emissions Intensity Trend</a></li>
+    <li class="toc-group">Generation</li>
+    <li><a href="#sec3" class="toc-link"><span class="toc-num">3</span> Generation Mix by State (2024)</a></li>
+    <li><a href="#sec4" class="toc-link"><span class="toc-num">4</span> Emissions by Fuel Source per State</a></li>
+    <li><a href="#sec5" class="toc-link"><span class="toc-num">5</span> Emission Factors by Fuel Type</a></li>
+    <li class="toc-group">Economics</li>
+    <li><a href="#sec6" class="toc-link"><span class="toc-num">6</span> LCOE by Technology (Australia, 2024)</a></li>
+    <li><a href="#sec7" class="toc-link"><span class="toc-num">7</span> Historical LCOE Trends (2010&ndash;2024)</a></li>
+    <li><a href="#sec8" class="toc-link"><span class="toc-num">8</span> Energy Storage Capital Costs</a></li>
+    <li class="toc-group">Electrification</li>
+    <li><a href="#sec9" class="toc-link"><span class="toc-num">9</span> Gas vs Heat Pump Heating Breakeven</a></li>
+    <li class="toc-group">Reference</li>
+    <li><a href="#sec10" class="toc-link"><span class="toc-num">10</span> Data Table: Scope 2 Emission Factors</a></li>
+    <li><a href="#sec11" class="toc-link"><span class="toc-num">11</span> Assumptions &amp; Methodology</a></li>
+    <li><a href="#sec12" class="toc-link"><span class="toc-num">12</span> Citations &amp; Data Sources</a></li>
+  </ul>
+</div>
 
 <h1>Australian Electricity Carbon Intensity by State</h1>
 <p class="subtitle">Scope 2 grid emission factors, generation mix, and emissions trends across Australian states and territories &mdash; FY2013&ndash;14 to FY2023&ndash;24</p>
@@ -62,7 +187,7 @@
 <!-- ============================================================ -->
 <!-- CHART 1: All states overview -->
 <!-- ============================================================ -->
-<h2>1. Grid Emissions Intensity Trends by State</h2>
+<h2 id="sec1">1. Grid Emissions Intensity Trends by State</h2>
 <div class="chart-grid">
   <div class="chart-card full-width">
     <h3>Scope 2 Emission Factors by State (kg CO<sub>2</sub>-e / kWh) <span class="source-tag verified">NGA Factors</span></h3>
@@ -86,7 +211,7 @@
 <!-- ============================================================ -->
 <!-- CHART 2: National trend -->
 <!-- ============================================================ -->
-<h2>2. National Emissions Intensity Trend</h2>
+<h2 id="sec2">2. National Emissions Intensity Trend</h2>
 <div class="chart-grid">
   <div class="chart-card full-width">
     <h3>Australia &mdash; National Average Grid Emissions Intensity <span class="source-tag">Multiple sources</span></h3>
@@ -108,7 +233,7 @@
 <!-- ============================================================ -->
 <!-- CHART 3: 2024 State generation mix -->
 <!-- ============================================================ -->
-<h2>3. Electricity Generation Mix by State (Calendar Year 2024)</h2>
+<h2 id="sec3">3. Electricity Generation Mix by State (Calendar Year 2024)</h2>
 <div class="chart-grid">
   <div class="chart-card full-width">
     <h3>Generation by Source &mdash; Each State (%) <span class="source-tag verified">AEMO / energy.gov.au</span></h3>
@@ -140,7 +265,7 @@
 <!-- ============================================================ -->
 <!-- CHARTS 4: Per-state fuel source breakdown -->
 <!-- ============================================================ -->
-<h2>4. Emissions Intensity by Fuel Source per State</h2>
+<h2 id="sec4">4. Emissions Intensity by Fuel Source per State</h2>
 <p>Stacked area charts showing the estimated contribution of each fuel type to the state's overall grid emissions intensity. The total height at each year approximates the state's grid-average intensity. Renewable sources (wind, solar, hydro) contribute zero direct emissions.</p>
 
 <div class="chart-grid">
@@ -157,7 +282,7 @@
 <!-- ============================================================ -->
 <!-- CHART: Fuel-type emission factors -->
 <!-- ============================================================ -->
-<h2>5. Reference: Emission Factors by Fuel Type</h2>
+<h2 id="sec5">5. Reference: Emission Factors by Fuel Type</h2>
 <div class="chart-grid">
   <div class="chart-card full-width">
     <h3>Typical Sent-Out Emission Factors (tCO<sub>2</sub>-e/MWh) <span class="source-tag">AEMO / NGA</span></h3>
@@ -169,7 +294,7 @@
 <!-- ============================================================ -->
 <!-- CHART 6: Australian LCOE by technology -->
 <!-- ============================================================ -->
-<h2>6. Levelised Cost of Energy by Technology (Australia, 2024)</h2>
+<h2 id="sec6">6. Levelised Cost of Energy by Technology (Australia, 2024)</h2>
 <div class="chart-grid">
   <div class="chart-card full-width">
     <h3>LCOE Range by Generation Technology (AUD/MWh, 2024&ndash;25) <span class="source-tag verified">CSIRO GenCost</span></h3>
@@ -181,7 +306,7 @@
 <!-- ============================================================ -->
 <!-- CHART 7: Historical LCOE trends -->
 <!-- ============================================================ -->
-<h2>7. Historical LCOE Trends &mdash; Solar, Wind &amp; Battery (2010&ndash;2024)</h2>
+<h2 id="sec7">7. Historical LCOE Trends &mdash; Solar, Wind &amp; Battery (2010&ndash;2024)</h2>
 <div class="chart-grid">
   <div class="chart-card full-width">
     <h3>Global Weighted-Average LCOE Decline (USD/MWh) <span class="source-tag">IRENA / Lazard</span></h3>
@@ -193,7 +318,7 @@
 <!-- ============================================================ -->
 <!-- CHART 8: Storage costs -->
 <!-- ============================================================ -->
-<h2>8. Energy Storage Capital Costs (Australia, 2024)</h2>
+<h2 id="sec8">8. Energy Storage Capital Costs (Australia, 2024)</h2>
 <div class="chart-grid">
   <div class="chart-card full-width">
     <h3>Storage Capital Cost by Technology &amp; Duration (AUD/kWh, 2024&ndash;25) <span class="source-tag verified">CSIRO GenCost</span></h3>
@@ -214,9 +339,40 @@
 </div>
 
 <!-- ============================================================ -->
+<!-- CHART 9: Gas vs Heat Pump Heating Breakeven -->
+<!-- ============================================================ -->
+<h2 id="sec9">9. Gas vs Heat Pump Heating &mdash; Emissions &amp; Cost Breakeven by State</h2>
+<p>Comparing the emissions intensity and running cost of delivering one GJ of useful space heating via natural gas (ducted heater) versus an electric reverse-cycle heat pump, for each Australian state. The breakeven depends on each state&rsquo;s grid carbon intensity, local energy prices, and climate-dependent heat pump efficiency.</p>
+
+<div class="chart-grid">
+  <div class="chart-card">
+    <h3>Emissions per GJ Useful Heat (kg CO<sub>2</sub>-e) <span class="source-tag verified">NGA Factors</span></h3>
+    <canvas id="chartHeatingEmissions"></canvas>
+    <p class="legend-note">Gas heating assumes 85% efficient ducted heater with NGA scope 1 factor of 55.5 kg CO<sub>2</sub>-e/GJ (incl. CO<sub>2</sub>, CH<sub>4</sub>, N<sub>2</sub>O). Dashed line shows full fuel-cycle gas emissions including upstream scope 3 (~68.5 kg/GJ). Heat pump COP varies by state climate zone (2.8&ndash;5.0). Grid emission factors are FY2023&ndash;24 from NGA Factors.<sup>[2][13]</sup></p>
+  </div>
+  <div class="chart-card">
+    <h3>Running Cost per GJ Useful Heat (AUD) <span class="source-tag">AEMC / AER 2024&ndash;25</span></h3>
+    <canvas id="chartHeatingCost"></canvas>
+    <p class="legend-note">Residential energy prices from AEMC price trends and AER default market offers (2024&ndash;25). Gas not available in TAS or NT (no reticulated network). Heat pump cost = electricity price &times; 277.8 kWh/GJ &divide; COP. Gas cost = gas price &divide; heater efficiency.<sup>[13][14]</sup></p>
+  </div>
+</div>
+
+<div class="section-text">
+  <h3>Key Observations &mdash; Heating Breakeven</h3>
+  <ul>
+    <li><strong>Heat pumps produce lower emissions than gas heaters in 6 of 7 states</strong> (all except Victoria on scope 1 gas only). When upstream gas supply-chain emissions are included (scope 3), heat pumps win in every state including Victoria.</li>
+    <li><strong>South Australia and Tasmania</strong> show the most dramatic advantage &mdash; heat pump emissions are 70&ndash;80% lower than gas, reflecting their very low grid carbon intensity (0.23 and 0.15 kg CO<sub>2</sub>-e/kWh respectively).</li>
+    <li><strong>Victoria</strong> is the closest to breakeven due to its brown coal-heavy grid (0.77 kg CO<sub>2</sub>-e/kWh) combined with colder winters reducing heat pump COP to ~3.2. However, Victoria&rsquo;s grid is decarbonising rapidly (&minus;34% since FY2014), and the breakeven tips further toward heat pumps each year.</li>
+    <li><strong>On cost, heat pumps are cheaper to run in NSW, QLD, SA, and VIC</strong> where gas prices range from $33&ndash;60/GJ. Queensland ($60/GJ) and SA ($55/GJ) show the largest cost advantage for heat pumps. In WA, lower gas prices (~$25/GJ) narrow the gap but heat pumps remain competitive.</li>
+    <li><strong>TAS and NT have no reticulated gas networks</strong>, so electric heating is the only piped option. Tasmania&rsquo;s near-zero-carbon grid makes heat pumps exceptionally clean. The NT has minimal heating demand (tropical climate).</li>
+    <li><strong>These figures exclude capital costs.</strong> A new reverse-cycle heat pump costs ~A$2,000&ndash;5,000 installed; a ducted gas heater ~A$3,000&ndash;6,000. Several states offer rebates for heat pump installation (e.g. VIC Energy Upgrades, NSW Energy Savings Scheme, SA Retailer Energy Productivity Scheme).</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
 <!-- DATA TABLE -->
 <!-- ============================================================ -->
-<h2>9. Data Table: Scope 2 Grid Emission Factors (kg CO<sub>2</sub>-e/kWh)</h2>
+<h2 id="sec10">10. Data Table: Scope 2 Grid Emission Factors (kg CO<sub>2</sub>-e/kWh)</h2>
 <div class="section-text">
 <div style="overflow-x:auto;">
 <table id="dataTable">
@@ -232,7 +388,7 @@
 <!-- ============================================================ -->
 <!-- ASSUMPTIONS -->
 <!-- ============================================================ -->
-<h2>10. Assumptions &amp; Methodology</h2>
+<h2 id="sec11">11. Assumptions &amp; Methodology</h2>
 <div class="section-text">
   <ul>
     <li><strong>Greenhouse gas emission scopes</strong> are defined by the GHG Protocol and used in the NGER Act:
@@ -260,7 +416,7 @@
 <!-- ============================================================ -->
 <!-- CITATIONS -->
 <!-- ============================================================ -->
-<h2>11. Citations &amp; Data Sources</h2>
+<h2 id="sec12">12. Citations &amp; Data Sources</h2>
 <div class="section-text">
   <h3>Primary Sources</h3>
   <ol>
@@ -313,6 +469,13 @@
     </li>
     <li id="ref12"><strong>[12] Lazard, Levelized Cost of Energy+ (LCOE+) Version 18.0</strong> (June 2025). US-market LCOE and LCOS benchmarks with historical trends from 2009&ndash;2025. Unsubsidized, nominal USD.
       <br><a href="https://www.lazard.com/research-insights/levelized-cost-of-energyplus-lcoeplus/" target="_blank">https://www.lazard.com/.../levelized-cost-of-energyplus-lcoeplus/</a>
+    </li>
+    <li id="ref13"><strong>[13] DCCEEW, NGA Factors 2025 &mdash; Table 2: Natural Gas Combustion</strong>. Scope 1 emission factor for natural gas: 55.5 kg CO<sub>2</sub>-e/GJ (CO<sub>2</sub> + CH<sub>4</sub> + N<sub>2</sub>O from combustion). Scope 3 (full fuel-cycle including upstream fugitive emissions): ~13.0 kg CO<sub>2</sub>-e/GJ additional, giving ~68.5 kg CO<sub>2</sub>-e/GJ total. Heat pump COP assumptions derived from CSIRO housing energy modelling and Sustainability Victoria heat pump guidance.
+      <br><a href="https://www.dcceew.gov.au/climate-change/publications/national-greenhouse-accounts-factors" target="_blank">https://www.dcceew.gov.au/.../national-greenhouse-accounts-factors</a>
+    </li>
+    <li id="ref14"><strong>[14] AEMC, Residential Electricity Price Trends 2024</strong> &amp; <strong>AER, Default Market Offer 2024&ndash;25</strong>. State-level residential electricity and gas prices. Electricity: 28&ndash;40 c/kWh depending on state (typical market offers). Gas: $25&ndash;60/GJ depending on state and market structure (VIC lowest ~$33/GJ; QLD highest ~$60/GJ).
+      <br><a href="https://www.aemc.gov.au/market-reviews-advice/residential-electricity-price-trends" target="_blank">https://www.aemc.gov.au/.../residential-electricity-price-trends</a>
+      <br><a href="https://www.aer.gov.au/consumers/default-market-offer-prices" target="_blank">https://www.aer.gov.au/.../default-market-offer-prices</a>
     </li>
   </ol>
 
@@ -981,6 +1144,191 @@ function createStorageChart() {
 }
 
 // =============================================================
+// CHART 9: Gas vs Heat Pump Heating — Emissions Breakeven
+// =============================================================
+function createHeatingEmissionsChart() {
+  const states = ['NSW/ACT', 'VIC', 'QLD', 'SA', 'WA', 'TAS', 'NT'];
+
+  // FY2023-24 grid emission factors (kg CO2-e/kWh) from stateData
+  const gridIntensity = {
+    'NSW/ACT': 0.66, 'VIC': 0.77, 'QLD': 0.71,
+    'SA': 0.23, 'WA': 0.51, 'TAS': 0.15, 'NT': 0.56
+  };
+
+  // Heat pump COP by state (heating-season average, climate-adjusted)
+  // Colder states (VIC, TAS) have lower COP; warmer states (QLD, NT) higher
+  const heatPumpCOP = {
+    'NSW/ACT': 3.8, 'VIC': 3.2, 'QLD': 4.5,
+    'SA': 3.8, 'WA': 4.2, 'TAS': 2.8, 'NT': 5.0
+  };
+
+  // Gas heating parameters
+  const gasEF = 55.5;        // kg CO2-e/GJ (NGA scope 1, natural gas combustion incl. CO2+CH4+N2O)
+  const gasEFFullCycle = 68.5; // kg CO2-e/GJ (scope 1 + scope 3 upstream fugitives ~13 kg/GJ)
+  const gasEfficiency = 0.85;  // 85% ducted gas heater efficiency
+
+  // Emissions per GJ useful heat
+  const gasEmissions = gasEF / gasEfficiency;           // ~60.5 kg/GJ
+  const gasEmissionsFC = gasEFFullCycle / gasEfficiency; // ~75.8 kg/GJ
+
+  // 1 GJ = 277.78 kWh; heat pump delivers COP × electrical input as heat
+  const kWhPerGJ = 277.78;
+  const heatPumpEmissions = states.map(s =>
+    +(gridIntensity[s] * kWhPerGJ / heatPumpCOP[s]).toFixed(1)
+  );
+
+  new Chart(document.getElementById('chartHeatingEmissions'), {
+    type: 'bar',
+    data: {
+      labels: states,
+      datasets: [
+        {
+          label: 'Gas heater (scope 1)',
+          data: states.map(() => +gasEmissions.toFixed(1)),
+          backgroundColor: '#f4a261cc',
+          borderColor: '#f4a261',
+          borderWidth: 1
+        },
+        {
+          label: 'Heat pump (grid electricity)',
+          data: heatPumpEmissions,
+          backgroundColor: states.map(s =>
+            (gridIntensity[s] * kWhPerGJ / heatPumpCOP[s]) < gasEmissions
+              ? '#2a9d8fcc' : '#e76f51cc'
+          ),
+          borderColor: states.map(s =>
+            (gridIntensity[s] * kWhPerGJ / heatPumpCOP[s]) < gasEmissions
+              ? '#2a9d8f' : '#e76f51'
+          ),
+          borderWidth: 1
+        },
+        {
+          label: `Gas full fuel-cycle incl. upstream (${gasEmissionsFC.toFixed(0)} kg)`,
+          data: states.map(() => +gasEmissionsFC.toFixed(1)),
+          type: 'line',
+          borderColor: '#e76f51',
+          borderWidth: 2,
+          borderDash: [8, 4],
+          pointRadius: 0,
+          fill: false,
+          order: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 14 } },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              if (ctx.dataset.type === 'line') return `${ctx.dataset.label}`;
+              return `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)} kg CO₂-e/GJ`;
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          title: { display: true, text: 'kg CO₂-e per GJ useful heat' },
+          beginAtZero: true,
+          max: 90
+        }
+      }
+    }
+  });
+}
+
+// =============================================================
+// CHART 9b: Gas vs Heat Pump Heating — Cost Breakeven
+// =============================================================
+function createHeatingCostChart() {
+  const states = ['NSW/ACT', 'VIC', 'QLD', 'SA', 'WA', 'TAS', 'NT'];
+
+  // Residential electricity prices (c/kWh, 2024-25 typical market offer inc. GST)
+  // Sources: AER DMO 6 (NSW, QLD, SA); ESC VDO (VIC); Synergy (WA); OTTER (TAS); Jacana (NT)
+  const elecPrice = {
+    'NSW/ACT': 33.0, 'VIC': 28.0, 'QLD': 30.0,
+    'SA': 40.0, 'WA': 31.6, 'TAS': 29.0, 'NT': 28.0
+  };
+
+  // Residential gas prices ($/GJ usage rate, 2024-25 typical market offer)
+  // Sources: Energyse, Finder, ACCC Gas Inquiry Dec 2024
+  // null = no reticulated gas network
+  const gasPrice = {
+    'NSW/ACT': 40, 'VIC': 33, 'QLD': 60,
+    'SA': 55, 'WA': 25, 'TAS': null, 'NT': null
+  };
+
+  // Heat pump COP (same as emissions chart)
+  const heatPumpCOP = {
+    'NSW/ACT': 3.8, 'VIC': 3.2, 'QLD': 4.5,
+    'SA': 3.8, 'WA': 4.2, 'TAS': 2.8, 'NT': 5.0
+  };
+
+  const gasEfficiency = 0.85;
+  const kWhPerGJ = 277.78;
+
+  // Cost per GJ useful heat (AUD)
+  const gasCost = states.map(s =>
+    gasPrice[s] !== null ? +(gasPrice[s] / gasEfficiency).toFixed(1) : null
+  );
+  const hpCost = states.map(s =>
+    +((kWhPerGJ / heatPumpCOP[s]) * (elecPrice[s] / 100)).toFixed(1)
+  );
+
+  new Chart(document.getElementById('chartHeatingCost'), {
+    type: 'bar',
+    data: {
+      labels: states,
+      datasets: [
+        {
+          label: 'Gas heater',
+          data: gasCost,
+          backgroundColor: '#f4a261cc',
+          borderColor: '#f4a261',
+          borderWidth: 1
+        },
+        {
+          label: 'Heat pump',
+          data: hpCost,
+          backgroundColor: states.map((s, i) =>
+            gasCost[i] !== null && hpCost[i] < gasCost[i]
+              ? '#2a9d8fcc' : '#4CAF50cc'
+          ),
+          borderColor: states.map((s, i) =>
+            gasCost[i] !== null && hpCost[i] < gasCost[i]
+              ? '#2a9d8f' : '#4CAF50'
+          ),
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 14 } },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              if (ctx.parsed.y === null) return `${ctx.dataset.label}: N/A (no gas network)`;
+              return `${ctx.dataset.label}: A$${ctx.parsed.y.toFixed(2)}/GJ`;
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          title: { display: true, text: 'AUD per GJ useful heat' },
+          beginAtZero: true,
+          max: 80
+        }
+      }
+    }
+  });
+}
+
+// =============================================================
 // INIT
 // =============================================================
 createAllStatesChart();
@@ -997,7 +1345,114 @@ createFuelFactorsChart();
 createLCOEChart();
 createLCOETrendChart();
 createStorageChart();
+createHeatingEmissionsChart();
+createHeatingCostChart();
 populateTable();
+
+// =============================================================
+// EXPAND / FULLSCREEN for chart cards
+// =============================================================
+const expandSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>';
+const collapseSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14h6v6M14 4h6v6M10 14l-7 7M21 3l-7 7"/></svg>';
+const backdrop = document.getElementById('fullscreenBackdrop');
+
+document.querySelectorAll('.chart-card').forEach(card => {
+  const btn = document.createElement('button');
+  btn.className = 'chart-expand-btn';
+  btn.innerHTML = expandSvg;
+  btn.setAttribute('aria-label', 'Expand chart');
+  btn.addEventListener('click', () => toggleFullscreen(card, btn));
+  card.appendChild(btn);
+});
+
+let activeFullscreen = null;
+
+function toggleFullscreen(card, btn) {
+  if (card.classList.contains('fullscreen')) {
+    card.classList.remove('fullscreen');
+    backdrop.classList.remove('visible');
+    btn.innerHTML = expandSvg;
+    btn.setAttribute('aria-label', 'Expand chart');
+    activeFullscreen = null;
+    // Resize chart to fit restored card
+    const canvas = card.querySelector('canvas');
+    if (canvas) Chart.getChart(canvas)?.resize();
+  } else {
+    // Close any other open fullscreen first
+    if (activeFullscreen) {
+      activeFullscreen.card.classList.remove('fullscreen');
+      activeFullscreen.btn.innerHTML = expandSvg;
+    }
+    card.classList.add('fullscreen');
+    backdrop.classList.add('visible');
+    btn.innerHTML = collapseSvg;
+    btn.setAttribute('aria-label', 'Collapse chart');
+    activeFullscreen = { card, btn };
+    // Resize chart to fill viewport
+    const canvas = card.querySelector('canvas');
+    if (canvas) Chart.getChart(canvas)?.resize();
+  }
+}
+
+backdrop.addEventListener('click', () => {
+  if (activeFullscreen) {
+    toggleFullscreen(activeFullscreen.card, activeFullscreen.btn);
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (tocPanel.classList.contains('open')) closeToc();
+    else if (activeFullscreen) toggleFullscreen(activeFullscreen.card, activeFullscreen.btn);
+  }
+});
+
+// =============================================================
+// TOC PANEL
+// =============================================================
+const tocToggle = document.getElementById('tocToggle');
+const tocPanel = document.getElementById('tocPanel');
+const tocBackdrop = document.getElementById('tocBackdrop');
+const tocClose = document.getElementById('tocClose');
+
+function openToc() { tocPanel.classList.add('open'); tocBackdrop.classList.add('open'); }
+function closeToc() { tocPanel.classList.remove('open'); tocBackdrop.classList.remove('open'); }
+
+tocToggle.addEventListener('click', openToc);
+tocClose.addEventListener('click', closeToc);
+tocBackdrop.addEventListener('click', closeToc);
+
+// Close TOC when a link inside it is clicked, and smooth-scroll
+document.querySelectorAll('.toc-link').forEach(link => {
+  link.addEventListener('click', () => closeToc());
+});
+
+// =============================================================
+// ACTIVE NAV + TOC HIGHLIGHTING on scroll
+// =============================================================
+const navLinks = document.querySelectorAll('.section-nav-inner a');
+const tocLinks = document.querySelectorAll('.toc-link');
+const allNavLinks = [...navLinks, ...tocLinks];
+const sections = Array.from(navLinks).map(a => {
+  const id = a.getAttribute('href').slice(1);
+  return document.getElementById(id);
+}).filter(Boolean);
+
+function updateActiveNav() {
+  const scrollY = window.scrollY + 80;
+  let currentId = '';
+  for (const sec of sections) {
+    if (sec.offsetTop <= scrollY) currentId = sec.id;
+  }
+  allNavLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + currentId);
+  });
+  // Auto-scroll the active nav link into view in the horizontal bar
+  const activeBar = document.querySelector('.section-nav-inner a.active');
+  if (activeBar) activeBar.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+}
+window.addEventListener('scroll', updateActiveNav, { passive: true });
+updateActiveNav();
 </script>
 </body>
 </html>
