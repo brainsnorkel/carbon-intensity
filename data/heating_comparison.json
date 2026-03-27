@@ -1,0 +1,84 @@
+{
+  "_metadata": {
+    "title": "Gas vs Heat Pump vs Resistive Heater — Emissions and Cost Comparison by State",
+    "sources": [
+      "DCCEEW NGA Factors 2025 — Table 2 (natural gas combustion)",
+      "AEMC Residential Electricity Price Trends 2024",
+      "AER Default Market Offer 2024-25",
+      "CSIRO housing energy modelling (heat pump COP)",
+      "Sustainability Victoria heat pump guidance",
+      "Energyse, Finder, ACCC Gas Inquiry Dec 2024 (gas prices)"
+    ],
+    "source_urls": [
+      "https://www.dcceew.gov.au/climate-change/publications/national-greenhouse-accounts-factors",
+      "https://www.aemc.gov.au/market-reviews-advice/residential-electricity-price-trends",
+      "https://www.aer.gov.au/consumers/default-market-offer-prices"
+    ],
+    "retrieved": "2026-03-28",
+    "version": "1.0.0"
+  },
+  "parameters": {
+    "gasEmissionFactor_scope1": {
+      "value": 55.5,
+      "units": "kg CO2-e/GJ",
+      "notes": "Natural gas combustion including CO2, CH4, N2O"
+    },
+    "gasEmissionFactor_fullCycle": {
+      "value": 68.5,
+      "units": "kg CO2-e/GJ",
+      "notes": "Scope 1 + scope 3 upstream fugitive emissions (~13 kg/GJ additional)"
+    },
+    "gasHeaterEfficiency": 0.85,
+    "kWhPerGJ": 277.78
+  },
+  "gridIntensity_FY2024": {
+    "units": "kg CO2-e/kWh",
+    "NSW/ACT": 0.66,
+    "VIC": 0.77,
+    "QLD": 0.71,
+    "SA": 0.23,
+    "WA": 0.51,
+    "TAS": 0.15,
+    "NT": 0.56
+  },
+  "heatPumpCOP": {
+    "notes": "Heating-season average, climate-adjusted. Colder states have lower COP.",
+    "NSW/ACT": 3.8,
+    "VIC": 3.2,
+    "QLD": 4.5,
+    "SA": 3.8,
+    "WA": 4.2,
+    "TAS": 2.8,
+    "NT": 5.0
+  },
+  "electricityPrice_2024_25": {
+    "units": "c/kWh (residential, typical market offer inc. GST)",
+    "sources_by_state": {
+      "NSW/ACT": "AER DMO 6",
+      "VIC": "ESC VDO",
+      "QLD": "AER DMO 6",
+      "SA": "AER DMO 6",
+      "WA": "Synergy",
+      "TAS": "OTTER",
+      "NT": "Jacana"
+    },
+    "NSW/ACT": 33.0,
+    "VIC": 28.0,
+    "QLD": 30.0,
+    "SA": 40.0,
+    "WA": 31.6,
+    "TAS": 29.0,
+    "NT": 28.0
+  },
+  "gasPrice_2024_25": {
+    "units": "$/GJ (residential usage rate, typical market offer)",
+    "notes": "null = no reticulated gas network in state",
+    "NSW/ACT": 40,
+    "VIC": 33,
+    "QLD": 60,
+    "SA": 55,
+    "WA": 25,
+    "TAS": null,
+    "NT": null
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "_metadata": {
+    "title": "Historical Global Weighted-Average LCOE and Battery Cost Trends (2010–2024)",
+    "sources": [
+      "IRENA Renewable Power Generation Costs in 2024 (July 2025)",
+      "BloombergNEF/IRENA battery pack cost data"
+    ],
+    "source_urls": [
+      "https://www.irena.org/Energy-Transition/Technology/Power-generation-costs"
+    ],
+    "notes": "Solar PV declined 90% (USD 460 to 43/MWh). Onshore wind declined 67%. Battery pack costs are capital cost per kWh, used as a trend proxy.",
+    "retrieved": "2026-03-28",
+    "version": "1.0.0"
+  },
+  "years": ["2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020","2021","2022","2023","2024"],
+  "solarPV": {
+    "units": "USD/MWh",
+    "values": [460, 380, 290, 210, 170, 130, 100, 85, 70, 60, 57, 55, 49, 44, 43]
+  },
+  "onshoreWind": {
+    "units": "USD/MWh",
+    "values": [100, 90, 80, 70, 60, 56, 50, 46, 42, 40, 39, 37, 35, 33, 34]
+  },
+  "batteryPack": {
+    "units": "USD/kWh",
+    "values": [1183, 899, 726, 599, 540, 373, 281, 226, 185, 161, 150, 141, 151, 139, 115]
+  }
+}

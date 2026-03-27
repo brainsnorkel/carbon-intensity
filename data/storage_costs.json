@@ -1,0 +1,28 @@
+{
+  "_metadata": {
+    "title": "Energy Storage Capital Costs — Australia",
+    "units": "AUD/kWh (total installed cost)",
+    "sources": [
+      "CSIRO & AEMO GenCost 2024-25"
+    ],
+    "source_urls": [
+      "https://www.csiro.au/en/research/technology-space/energy/electricity-transition/gencost",
+      "https://data.csiro.au/collection/csiro:44228"
+    ],
+    "retrieved": "2026-03-28",
+    "version": "1.0.0"
+  },
+  "storageTypes": [
+    "Battery 1-hour",
+    "Battery 2-hour",
+    "Battery 4-hour",
+    "Battery 8-hour",
+    "Battery 12-hour",
+    "Battery 24-hour",
+    "Pumped Hydro 10-hour",
+    "Pumped Hydro 24-hour",
+    "Pumped Hydro 48-hour"
+  ],
+  "costs2024": [910, 608, 423, 344, 318, 292, 768, 271, 163],
+  "costs2030_projected": [780, 525, 367, 300, 278, 256, 655, 231, 139]
+}

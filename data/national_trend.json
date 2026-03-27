@@ -1,0 +1,22 @@
+{
+  "_metadata": {
+    "title": "National Average Emissions Intensity Trend",
+    "units": "kg CO2-e/kWh",
+    "basis": "Calendar year",
+    "sources": [
+      "Low Carbon Power (lowcarbonpower.org/region/Australia)",
+      "Climate Change Authority",
+      "Australian Energy Council",
+      "Statista"
+    ],
+    "source_urls": [
+      "https://lowcarbonpower.org/region/Australia",
+      "https://www.climatechangeauthority.gov.au/analysis-electricity-consumption-electricity-generation-emissions-intensity-and-economy-wide",
+      "https://www.energycouncil.com.au/analysis/emissions-trends-and-electricity-sector/"
+    ],
+    "retrieved": "2026-03-28",
+    "version": "1.0.0"
+  },
+  "years": ["2008","2010","2012","2014","2016","2018","2020","2022","2024"],
+  "nationalAverage": [0.88, 0.86, 0.84, 0.81, 0.79, 0.74, 0.66, 0.60, 0.47]
+}

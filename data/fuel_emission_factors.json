@@ -1,0 +1,35 @@
+{
+  "_metadata": {
+    "title": "Emission Factors by Fuel Type",
+    "units": "tCO2-e/MWh (sent out)",
+    "sources": [
+      "AEMO generator registrations",
+      "DCCEEW NGA Factors (natural gas combustion factors)"
+    ],
+    "source_urls": [
+      "https://www.dcceew.gov.au/climate-change/publications/national-greenhouse-accounts-factors"
+    ],
+    "notes": "Renewables assigned zero scope 1 emissions per NGA methodology. Gas values are blended CCGT/OCGT.",
+    "retrieved": "2026-03-28",
+    "version": "1.0.0"
+  },
+  "fuelFactors": {
+    "Brown coal": 1.30,
+    "Black coal": 0.93,
+    "Gas (OCGT)": 0.65,
+    "Gas (CCGT)": 0.45,
+    "Oil/Diesel": 0.78,
+    "Wind": 0.00,
+    "Solar PV": 0.00,
+    "Hydro": 0.00
+  },
+  "gasFactorByState": {
+    "NSW/ACT": 0.55,
+    "VIC": 0.48,
+    "QLD": 0.50,
+    "SA": 0.50,
+    "WA": 0.50,
+    "TAS": 0.55,
+    "NT": 0.58
+  }
+}

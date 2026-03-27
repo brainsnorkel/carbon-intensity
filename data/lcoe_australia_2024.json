@@ -1,0 +1,28 @@
+{
+  "_metadata": {
+    "title": "Levelised Cost of Energy by Technology — Australia 2024-25",
+    "units": "AUD/MWh (2024-25 real)",
+    "sources": [
+      "CSIRO & AEMO GenCost 2024-25, Table B.10"
+    ],
+    "source_urls": [
+      "https://www.csiro.au/en/research/technology-space/energy/electricity-transition/gencost",
+      "https://data.csiro.au/collection/csiro:44228"
+    ],
+    "notes": "Ranges represent low-high LCOE estimates. VRE + Integration includes system integration costs at 60% renewable share.",
+    "retrieved": "2026-03-28",
+    "version": "1.0.0"
+  },
+  "technologies": [
+    {"name": "Solar PV (large-scale)", "range": [43, 73]},
+    {"name": "Onshore Wind", "range": [70, 116]},
+    {"name": "Offshore Wind (fixed)", "range": [135, 175]},
+    {"name": "Gas CCGT", "range": [128, 192]},
+    {"name": "Gas OCGT (large)", "range": [207, 275]},
+    {"name": "Black Coal", "range": [102, 164]},
+    {"name": "Brown Coal", "range": [131, 211]},
+    {"name": "Nuclear (large)", "range": [155, 252]},
+    {"name": "Nuclear SMR", "range": [400, 663]},
+    {"name": "VRE + Integration (60% share)", "range": [101, 142]}
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "_metadata": {
+    "title": "Approximate Generation Share by Fuel Type per State (FY2014–FY2024)",
+    "units": "Percentage of total generation",
+    "basis": "Australian financial year",
+    "sources": [
+      "AEMO/OpenNEM generation data",
+      "energy.gov.au Australian Energy Statistics"
+    ],
+    "source_urls": [
+      "https://explore.openelectricity.org.au/emissions/au/",
+      "https://www.energy.gov.au/energy-data/australian-energy-statistics/electricity-generation"
+    ],
+    "notes": "Values are approximate, derived from multiple data sources. Used for per-state stacked area charts showing fuel-type contributions to emissions intensity.",
+    "retrieved": "2026-03-28",
+    "version": "1.0.0"
+  },
+  "years": ["FY14","FY15","FY16","FY17","FY18","FY19","FY20","FY21","FY22","FY23","FY24"],
+  "fuelSharesByState": {
+    "NSW/ACT": {
+      "Black coal": [82,80,79,77,75,72,68,65,62,58,55],
+      "Gas":        [6,6,6,7,7,8,8,7,7,6,5],
+      "Wind":       [3,4,4,5,6,7,8,9,10,12,13],
+      "Solar PV":   [1,2,3,4,5,7,10,13,15,18,21],
+      "Hydro":      [8,8,8,7,7,6,6,6,6,6,6]
+    },
+    "VIC": {
+      "Brown coal": [82,79,77,75,72,68,63,58,54,49,44],
+      "Gas":        [6,7,7,8,9,10,11,12,13,14,15],
+      "Wind":       [6,7,8,9,10,12,14,17,20,23,26],
+      "Solar PV":   [1,1,2,2,3,5,7,9,10,12,13],
+      "Hydro":      [5,6,6,6,6,5,5,4,3,2,2]
+    },
+    "QLD": {
+      "Black coal": [72,72,71,70,68,66,64,60,57,54,50],
+      "Gas":        [16,15,15,15,15,14,13,12,12,11,11],
+      "Wind":       [1,1,2,2,3,4,5,6,7,8,9],
+      "Solar PV":   [2,3,4,5,7,10,13,17,20,23,26],
+      "Hydro":      [3,3,3,3,3,2,2,2,2,2,2],
+      "Oil/Diesel": [1,1,1,1,1,1,1,1,1,1,1]
+    },
+    "SA": {
+      "Gas":        [46,42,38,35,31,27,24,22,20,19,18],
+      "Wind":       [30,34,38,40,44,47,49,51,53,54,55],
+      "Solar PV":   [4,6,8,12,15,18,22,24,25,26,26],
+      "Black coal": [18,16,14,11,8,6,3,1,0,0,0],
+      "Oil/Diesel": [2,2,2,2,2,2,2,2,2,1,1]
+    },
+    "WA": {
+      "Gas":        [54,54,53,53,52,51,50,48,45,42,40],
+      "Black coal": [34,33,33,32,31,30,28,26,24,22,20],
+      "Wind":       [5,6,6,7,8,9,10,12,14,17,19],
+      "Solar PV":   [2,3,4,4,6,7,9,11,14,17,19],
+      "Oil/Diesel": [5,4,4,4,3,3,3,3,3,2,2]
+    },
+    "TAS": {
+      "Hydro":      [78,85,86,84,82,82,82,82,83,88,86],
+      "Wind":       [12,12,12,14,16,16,16,16,15,10,12],
+      "Gas":        [10,3,2,2,2,2,2,2,2,2,2]
+    },
+    "NT": {
+      "Gas":        [88,89,90,90,91,91,92,92,93,93,93],
+      "Oil/Diesel": [10,9,8,8,7,6,5,5,4,3,3],
+      "Solar PV":   [2,2,2,2,2,3,3,3,3,4,4]
+    }
+  }
+}

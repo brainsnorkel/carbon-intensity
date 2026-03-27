@@ -85,13 +85,43 @@ The HTML file is self-contained with all data hardcoded in the `<script>` sectio
 - **Units**: kg CO₂-e/kWh (emission factors); tCO₂-e/MWh (fuel factors); % (generation mix); AUD/MWh (LCOE).
 - **Methodology change (2023)**: DCCEEW discontinued 3-year rolling averages; factors now use single-year AEMO data. May cause small discontinuities in trends.
 
+## Versioning & Changelog
+
+This project uses [Semantic Versioning](https://semver.org/). See [CHANGELOG.md](CHANGELOG.md) for full version history.
+
+- **Current version**: 1.0.0 (also in the `VERSION` file)
+- **MAJOR**: Breaking changes to data structure or report format
+- **MINOR**: New sections, charts, data sources, or features
+- **PATCH**: Data corrections, interpolated→confirmed upgrades, bug fixes
+
+## Reference Data Archive
+
+The `data/` directory stores machine-readable JSON copies of all data used in the report, with full source attribution. This protects against link rot and source revisions — government URLs change frequently, and agencies sometimes revise historical data without notice.
+
+See [data/README.md](data/README.md) for the full file listing and update instructions.
+
+The `references/` directory stores locally downloaded source PDFs (e.g. Lazard LCOE+, GenCost reports).
+
+## Annual Update Schedule
+
+The recommended update window is **October–November** each year, after the most critical source (DCCEEW NGA Factors, typically Aug–Oct) publishes new scope 2 emission factors for the prior financial year.
+
+| Source | Typical Publication | What to Update |
+|--------|-------------------|----------------|
+| DCCEEW NGA Factors | Aug–Oct | Scope 2 emission factors (critical) |
+| CER NGER data | Feb–Mar | Total emissions figures |
+| energy.gov.au Table O | Sep–Dec | Generation mix by state |
+| CSIRO GenCost | Dec–Jan | LCOE and storage costs |
+| IRENA Cost Report | Jul–Sep | Global LCOE trends |
+| AEMC/AER prices | May–Jun | Residential energy prices |
+
 ## Technical Details
 
 - **Format**: Single self-contained HTML file with embedded CSS and JavaScript.
 - **No build step**: Just open the file in a browser.
 - **Charting library**: Chart.js 4.4.1 (loaded from CDN).
 - **Responsive design**: Adapts to desktop and mobile (single column below 768px).
-- **Generated**: 28 March 2026.
+- **Version**: 1.0.0 — 28 March 2026.
 
 ## License
 
