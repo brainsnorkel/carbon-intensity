@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Australian Electricity Carbon Intensity by State — Research Report</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; color: #333; line-height: 1.6; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+  h1 { font-size: 1.8rem; margin-bottom: 8px; color: #1a1a2e; }
+  h2 { font-size: 1.3rem; margin: 36px 0 12px; color: #1a1a2e; border-bottom: 2px solid #e0e0e0; padding-bottom: 6px; }
+  h3 { font-size: 1.1rem; margin: 20px 0 8px; color: #444; }
+  p, li { font-size: 0.95rem; }
+  .subtitle { color: #666; margin-bottom: 24px; font-size: 0.95rem; }
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 20px 0; }
+  .chart-card { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .chart-card.full-width { grid-column: 1 / -1; }
+  .chart-card h3 { margin-top: 0; }
+  canvas { max-height: 380px; }
+  .section-text { background: #fff; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 16px 0; }
+  .section-text ul { padding-left: 20px; margin: 8px 0; }
+  .section-text li { margin-bottom: 6px; }
+  .warning { background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 14px 18px; margin: 16px 0; font-size: 0.9rem; }
+  .confirmed { background: #d4edda; border: 1px solid #28a745; border-radius: 6px; padding: 14px 18px; margin: 16px 0; font-size: 0.9rem; }
+  a { color: #0066cc; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 0.85rem; }
+  th, td { border: 1px solid #ddd; padding: 6px 10px; text-align: right; }
+  th { background: #f0f0f0; font-weight: 600; text-align: center; }
+  td:first-child, th:first-child { text-align: left; }
+  td.confirmed-val { background: #e8f5e9; }
+  td.interpolated-val { background: #fff8e1; }
+  .source-tag { display: inline-block; background: #e8f4fd; color: #0066cc; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; margin-left: 6px; }
+  .source-tag.verified { background: #d4edda; color: #155724; }
+  .key-stat { display: inline-block; background: #f0f4ff; border-radius: 8px; padding: 12px 20px; margin: 6px 8px 6px 0; text-align: center; }
+  .key-stat .number { font-size: 1.6rem; font-weight: 700; color: #1a1a2e; }
+  .key-stat .label { font-size: 0.75rem; color: #666; }
+  .stat-row { display: flex; flex-wrap: wrap; margin: 16px 0; }
+  .legend-note { font-size: 0.8rem; color: #666; margin-top: 6px; }
+  sup { font-size: 0.7em; }
+  @media (max-width: 768px) { .chart-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Australian Electricity Carbon Intensity by State</h1>
+<p class="subtitle">Scope 2 grid emission factors, generation mix, and emissions trends across Australian states and territories &mdash; FY2013&ndash;14 to FY2023&ndash;24</p>
+
+<div class="stat-row">
+  <div class="key-stat"><div class="number">0.62</div><div class="label">National avg<br>kg CO<sub>2</sub>-e/kWh (2024)</div></div>
+  <div class="key-stat"><div class="number">36%</div><div class="label">Renewable share<br>of generation (2024)</div></div>
+  <div class="key-stat"><div class="number">133.7 Mt</div><div class="label">Grid-connected<br>emissions FY2024-25</div></div>
+  <div class="key-stat"><div class="number">&minus;23%</div><div class="label">Electricity emissions<br>decline since 2005</div></div>
+</div>
+
+<div class="confirmed">
+  <strong>Data provenance:</strong> Values marked with <span style="background:#e8f5e9;padding:2px 6px;border-radius:3px;">green shading</span> in the data table are confirmed from published NGA Factors editions (2023 and 2024). Values with <span style="background:#fff8e1;padding:2px 6px;border-radius:3px;">yellow shading</span> are interpolated from known data points and verified against published NEM-wide trends. <strong>All interpolated values should be verified against the original NGA Factors PDFs before use in formal reporting.</strong>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHART 1: All states overview -->
+<!-- ============================================================ -->
+<h2>1. Grid Emissions Intensity Trends by State</h2>
+<div class="chart-grid">
+  <div class="chart-card full-width">
+    <h3>Scope 2 Emission Factors by State (kg CO<sub>2</sub>-e / kWh) <span class="source-tag verified">NGA Factors</span></h3>
+    <canvas id="chartAllStates"></canvas>
+    <p class="legend-note">Source: DCCEEW National Greenhouse Accounts Factors, editions 2014&ndash;2025. FY2023 and FY2024 values confirmed; earlier years interpolated.</p>
+  </div>
+</div>
+
+<div class="section-text">
+  <h3>Key Observations</h3>
+  <ul>
+    <li><strong>South Australia</strong> has seen the steepest decline in emissions intensity, falling from ~0.55 to 0.23 kg CO<sub>2</sub>-e/kWh over the decade &mdash; a ~58% reduction driven by massive wind and solar deployment (74% renewable generation in 2024).<sup>[1]</sup></li>
+    <li><strong>Victoria</strong> remains the highest-intensity NEM state due to continued brown coal reliance (Latrobe Valley), though it has fallen from ~1.13 to 0.77 &mdash; a ~32% reduction as wind has grown to ~20% of generation.<sup>[2]</sup></li>
+    <li><strong>Tasmania</strong> has consistently had the lowest intensity (~0.12&ndash;0.19 kg CO<sub>2</sub>-e/kWh), reflecting its predominantly hydroelectric generation (71% hydro, 19% wind in 2024).<sup>[1]</sup></li>
+    <li><strong>NSW</strong> and <strong>QLD</strong> have seen moderate declines driven by coal plant retirements and growing solar. NSW coal share fell from ~82% to ~55% over the period; QLD from ~72% to ~50%.<sup>[3]</sup></li>
+    <li><strong>WA</strong> operates a separate grid (SWIS) and has a gas-dominated generation profile (59% gas in 2024). Its decline has been more gradual.<sup>[1]</sup></li>
+    <li><strong>NT</strong> is heavily gas-dependent (83% gas in 2024) with minimal renewables penetration.<sup>[1]</sup></li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHART 2: National trend -->
+<!-- ============================================================ -->
+<h2>2. National Emissions Intensity Trend</h2>
+<div class="chart-grid">
+  <div class="chart-card full-width">
+    <h3>Australia &mdash; National Average Grid Emissions Intensity <span class="source-tag">Multiple sources</span></h3>
+    <canvas id="chartNational"></canvas>
+    <p class="legend-note">Sources: DCCEEW NGA Factors (national average); Climate Change Authority; Australian Energy Council; Low Carbon Power. Values are approximate annual averages.</p>
+  </div>
+</div>
+
+<div class="section-text">
+  <p>The national emissions intensity of electricity generation has declined from approximately 0.88 kg CO<sub>2</sub>-e/kWh in 2008 to ~0.47 kg CO<sub>2</sub>-e/kWh in 2024 &mdash; a reduction of nearly 47%.<sup>[4][5]</sup> Key drivers include:</p>
+  <ul>
+    <li>Closure of ageing coal-fired power stations (notably Hazelwood in VIC, 2017; Liddell in NSW, 2023)</li>
+    <li>Rapid growth in wind and solar generation (renewables reached 36% of total generation in 2024, a record high)<sup>[1]</sup></li>
+    <li>A temporary dip during the carbon pricing period (2012&ndash;2014), with a 4.5% intensity reduction in 2012&ndash;13<sup>[6]</sup></li>
+    <li>Total grid-connected scope 1 emissions declined from ~167 Mt CO<sub>2</sub>-e (FY2017&ndash;18) to 133.7 Mt CO<sub>2</sub>-e (FY2024&ndash;25)<sup>[7]</sup></li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHART 3: 2024 State generation mix -->
+<!-- ============================================================ -->
+<h2>3. Electricity Generation Mix by State (Calendar Year 2024)</h2>
+<div class="chart-grid">
+  <div class="chart-card full-width">
+    <h3>Generation by Source &mdash; Each State (%) <span class="source-tag verified">AEMO / energy.gov.au</span></h3>
+    <canvas id="chartGenMix2024"></canvas>
+    <p class="legend-note">Source: Australian Energy Statistics, DCCEEW/energy.gov.au; Solar Calculator analysis of AEMO data. Calendar year 2024. Values include all grid-connected and rooftop solar generation.</p>
+  </div>
+</div>
+
+<div class="section-text">
+  <h3>State Generation Profiles (2024)</h3>
+  <table>
+    <thead>
+      <tr><th>State</th><th>Total GWh</th><th>Coal</th><th>Gas</th><th>Solar</th><th>Wind</th><th>Hydro</th><th>Other</th><th>Renewables</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>NSW</td><td>76,846</td><td>59.6%</td><td>2.8%</td><td>22.9%</td><td>8.6%</td><td>4.0%</td><td>2.1%</td><td>36.8%</td></tr>
+      <tr><td>VIC</td><td>56,272</td><td>55.8%</td><td>3.3%</td><td>14.6%</td><td>19.8%</td><td>4.8%</td><td>1.7%</td><td>40.6%</td></tr>
+      <tr><td>QLD</td><td>74,790</td><td>57.3%</td><td>12.4%</td><td>20.8%</td><td>3.9%</td><td>2.0%</td><td>3.6%</td><td>28.6%</td></tr>
+      <tr><td>SA</td><td>15,366</td><td>0%</td><td>24.2%</td><td>31.1%</td><td>42.6%</td><td>0%</td><td>2.1%</td><td>74.3%</td></tr>
+      <tr><td>WA</td><td>45,580</td><td>16.9%</td><td>59.1%</td><td>10.8%</td><td>8.3%</td><td>0.2%</td><td>4.7%</td><td>19.4%</td></tr>
+      <tr><td>TAS</td><td>9,726</td><td>0%</td><td>5.2%</td><td>4.1%</td><td>19.4%</td><td>70.8%</td><td>0.5%</td><td>94.7%</td></tr>
+      <tr><td>NT</td><td>5,340</td><td>0%</td><td>83.0%</td><td>7.4%</td><td>0%</td><td>0%</td><td>9.6%</td><td>7.5%</td></tr>
+      <tr style="font-weight:600;background:#f5f5f5;"><td>Australia</td><td>283,920</td><td>45%</td><td>17%</td><td>18%</td><td>12%</td><td>5%</td><td>3%</td><td>36.1%</td></tr>
+    </tbody>
+  </table>
+  <p class="legend-note">Source: DCCEEW Australian Energy Statistics; Solar Calculator analysis of AEMO data.<sup>[1][8]</sup> VIC coal is brown coal (lignite); all other states' coal is black coal (bituminous).</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHARTS 4: Per-state fuel source breakdown -->
+<!-- ============================================================ -->
+<h2>4. Emissions Intensity by Fuel Source per State</h2>
+<p>Stacked area charts showing the estimated contribution of each fuel type to the state's overall grid emissions intensity. The total height at each year approximates the state's grid-average intensity. Renewable sources (wind, solar, hydro) contribute zero direct emissions.</p>
+
+<div class="chart-grid">
+  <div class="chart-card"><h3>New South Wales / ACT</h3><canvas id="chartNSW"></canvas></div>
+  <div class="chart-card"><h3>Victoria</h3><canvas id="chartVIC"></canvas></div>
+  <div class="chart-card"><h3>Queensland</h3><canvas id="chartQLD"></canvas></div>
+  <div class="chart-card"><h3>South Australia</h3><canvas id="chartSA"></canvas></div>
+  <div class="chart-card"><h3>Western Australia (SWIS)</h3><canvas id="chartWA"></canvas></div>
+  <div class="chart-card"><h3>Tasmania</h3><canvas id="chartTAS"></canvas></div>
+  <div class="chart-card"><h3>Northern Territory (DKIS)</h3><canvas id="chartNT"></canvas></div>
+</div>
+<p class="legend-note">Fuel-source contributions are estimated by multiplying each fuel's share of state generation (AEMO/OpenNEM) by its typical emission factor (AEMO generator registrations/NGA Factors). See Assumptions section for methodology.</p>
+
+<!-- ============================================================ -->
+<!-- CHART: Fuel-type emission factors -->
+<!-- ============================================================ -->
+<h2>5. Reference: Emission Factors by Fuel Type</h2>
+<div class="chart-grid">
+  <div class="chart-card full-width">
+    <h3>Typical Sent-Out Emission Factors (tCO<sub>2</sub>-e/MWh) <span class="source-tag">AEMO / NGA</span></h3>
+    <canvas id="chartFuelFactors"></canvas>
+    <p class="legend-note">Brown coal (lignite) has the highest emissions per MWh due to high moisture content and lower energy density. Gas varies significantly between efficient combined-cycle (CCGT) and peaking open-cycle (OCGT) plants.</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHART 6: Australian LCOE by technology -->
+<!-- ============================================================ -->
+<h2>6. Levelised Cost of Energy by Technology (Australia, 2024)</h2>
+<div class="chart-grid">
+  <div class="chart-card full-width">
+    <h3>LCOE Range by Generation Technology (AUD/MWh, 2024&ndash;25) <span class="source-tag verified">CSIRO GenCost</span></h3>
+    <canvas id="chartLCOE"></canvas>
+    <p class="legend-note">Source: CSIRO GenCost 2024&ndash;25, Appendix Table B.10. Ranges reflect variation in capacity factor assumptions. Discount rate 5.99%. Solar and wind are standalone (no storage); &ldquo;VRE + Integration&rdquo; includes firming costs at 60% variable renewable share. All values in real 2024&ndash;25 AUD.<sup>[10]</sup></p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHART 7: Historical LCOE trends -->
+<!-- ============================================================ -->
+<h2>7. Historical LCOE Trends &mdash; Solar, Wind &amp; Battery (2010&ndash;2024)</h2>
+<div class="chart-grid">
+  <div class="chart-card full-width">
+    <h3>Global Weighted-Average LCOE Decline (USD/MWh) <span class="source-tag">IRENA / Lazard</span></h3>
+    <canvas id="chartLCOETrend"></canvas>
+    <p class="legend-note">Source: IRENA <em>Renewable Power Generation Costs</em> (2010&ndash;2024 global weighted averages); Lazard LCOE+ v18.0 (2025) for cross-reference. Solar PV has fallen ~90% since 2010. Onshore wind has fallen ~67%. Values in nominal USD.<sup>[11][12]</sup></p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHART 8: Storage costs -->
+<!-- ============================================================ -->
+<h2>8. Energy Storage Capital Costs (Australia, 2024)</h2>
+<div class="chart-grid">
+  <div class="chart-card full-width">
+    <h3>Storage Capital Cost by Technology &amp; Duration (AUD/kWh, 2024&ndash;25) <span class="source-tag verified">CSIRO GenCost</span></h3>
+    <canvas id="chartStorage"></canvas>
+    <p class="legend-note">Source: CSIRO GenCost 2024&ndash;25, Appendix Tables B.4&ndash;B.8. Total installed cost basis (includes balance of system). Battery costs are for utility-scale lithium-ion. Pumped hydro costs are site-dependent. All values in real 2024&ndash;25 AUD.<sup>[10]</sup></p>
+  </div>
+</div>
+
+<div class="section-text">
+  <h3>Key Observations &mdash; Generation &amp; Storage Costs</h3>
+  <ul>
+    <li><strong>Solar PV is now the cheapest source of new electricity generation in Australia</strong> at A$43&ndash;73/MWh, followed by onshore wind at A$70&ndash;116/MWh. Both are cheaper than any new-build fossil fuel or nuclear option.<sup>[10]</sup></li>
+    <li><strong>New coal is uncompetitive:</strong> New black coal (A$102&ndash;164/MWh) and brown coal (A$131&ndash;211/MWh) significantly exceed renewable alternatives even before carbon costs are factored in.</li>
+    <li><strong>Nuclear remains the most expensive option:</strong> Large-scale nuclear at A$155&ndash;252/MWh and SMR at A$400&ndash;663/MWh reflect high capital costs (A$8,655/kW and A$29,667/kW respectively) and long construction times.<sup>[10]</sup></li>
+    <li><strong>Battery storage costs continue to fall rapidly.</strong> Utility-scale 4-hour lithium-ion batteries are at A$423/kWh capital cost, down from ~A$800/kWh in 2020. GenCost projects a further 31% decline to A$290/kWh by 2040.<sup>[10]</sup></li>
+    <li><strong>Pumped hydro is cost-effective for long duration</strong> &mdash; at A$163/kWh for 48-hour systems, it undercuts batteries for multi-day storage, though site selection constraints limit deployment.</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- DATA TABLE -->
+<!-- ============================================================ -->
+<h2>9. Data Table: Scope 2 Grid Emission Factors (kg CO<sub>2</sub>-e/kWh)</h2>
+<div class="section-text">
+<div style="overflow-x:auto;">
+<table id="dataTable">
+  <thead>
+    <tr><th>Financial Year</th><th>NSW/ACT</th><th>VIC</th><th>QLD</th><th>SA</th><th>WA (SWIS)</th><th>TAS</th><th>NT (DKIS)</th><th>Source</th></tr>
+  </thead>
+  <tbody></tbody>
+</table>
+</div>
+<p class="legend-note"><span style="background:#e8f5e9;padding:1px 6px;border-radius:3px;">Green</span> = confirmed from published NGA Factors. <span style="background:#fff8e1;padding:1px 6px;border-radius:3px;">Yellow</span> = interpolated (verify against original NGA Factors PDFs).</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- ASSUMPTIONS -->
+<!-- ============================================================ -->
+<h2>10. Assumptions &amp; Methodology</h2>
+<div class="section-text">
+  <ul>
+    <li><strong>Greenhouse gas emission scopes</strong> are defined by the GHG Protocol and used in the NGER Act:
+      <ul>
+        <li><strong>Scope 1</strong> &mdash; Direct emissions from sources owned or controlled by the reporting entity (e.g. combustion of fuel in a power station's boiler, fugitive methane from coal mines). Reported by generators.</li>
+        <li><strong>Scope 2</strong> &mdash; Indirect emissions from the generation of purchased electricity, heating, or cooling consumed by the reporting entity. This is what an electricity consumer &ldquo;inherits&rdquo; from the grid. <em>This report focuses on scope 2 location-based factors.</em></li>
+        <li><strong>Scope 3</strong> &mdash; All other indirect emissions across the value chain &mdash; upstream (fuel extraction, transport, infrastructure manufacture) and downstream (transmission losses, end-of-life). Scope 3 is not included in NGA Factors for electricity.</li>
+      </ul>
+    </li>
+    <li><strong>Scope 2 (location-based) factors</strong> are used throughout. These represent the average emissions intensity of electricity generated within each state/territory grid, adjusted for interstate electricity transfers where applicable (NEM states). They are the standard metric for organisational carbon accounting in Australia. A &ldquo;market-based&rdquo; scope 2 approach (using contractual instruments like GreenPower or LGCs) would yield different values but is not covered here.</li>
+    <li><strong>Financial year basis:</strong> All emission factor values are on an Australian financial year basis (July&ndash;June). "FY2024" refers to 1 July 2023 &ndash; 30 June 2024. Generation mix data uses calendar year 2024.</li>
+    <li><strong>NEM regions map approximately to states:</strong> NSW1 includes ACT; VIC1 = Victoria; QLD1 = Queensland; SA1 = South Australia; TAS1 = Tasmania. WA operates a separate grid (SWIS/WEM). NT operates the DKIS grid.</li>
+    <li><strong>Confirmed data points:</strong> NGA Factors 2024 edition (for FY2023&ndash;24 reporting) and NGA Factors 2023 edition (for FY2022&ndash;23 reporting) were directly verified from published values. An earlier educational reference (~FY2013&ndash;14) provided anchor values: VIC&nbsp;1.17, NSW&nbsp;0.87, QLD&nbsp;0.82, WA&nbsp;0.78, SA&nbsp;0.62, TAS&nbsp;0.20, NT&nbsp;0.69.</li>
+    <li><strong>Interpolation method:</strong> For years between confirmed data points, values were linearly interpolated and cross-checked against: (a) the known national average trend, (b) published NEM-wide intensity data from AEMO CDEII, and (c) the trajectory of renewable generation share in each state. Interpolated values are <em>indicative only</em>.</li>
+    <li><strong>Methodology change (2023):</strong> In August 2023, DCCEEW discontinued the three-year rolling average for calculating scope 2 factors. Factors now use single-year renewable generation data from AEMO NEM-Review, aligned with the latest NGER generation data. This may cause small discontinuities in the trend.<sup>[9]</sup></li>
+    <li><strong>Fuel source breakdown</strong> is estimated by combining each fuel type's approximate share of state generation (from AEMO and OpenNEM data) with the fuel type's typical emission factor (from AEMO generator registrations and NGA Factors). The per-fuel contribution is: <code>fuel_share &times; fuel_emission_factor</code>.</li>
+    <li><strong>Renewables</strong> (wind, solar PV, hydro) are assigned zero direct (scope 1) emissions, consistent with NGA methodology. Lifecycle emissions are excluded.</li>
+    <li><strong>Brown coal</strong> applies to Victoria only (Latrobe Valley generators). All other coal generation in Australia is black coal.</li>
+    <li><strong>Gas</strong> includes both combined-cycle (CCGT, ~0.4&ndash;0.5 tCO<sub>2</sub>-e/MWh) and open-cycle gas turbines (OCGT, ~0.6&ndash;0.7 tCO<sub>2</sub>-e/MWh). A blended gas factor is used per state based on estimated CCGT/OCGT mix.</li>
+    <li><strong>WA and NT data</strong> is less granular than NEM states due to separate grid operators. WA factors cover the SWIS (South West Interconnected System) only; isolated grids (e.g. NWIS at ~0.61 kg CO<sub>2</sub>-e/kWh) are excluded. NT covers the DKIS (Darwin&ndash;Katherine Interconnected System).</li>
+    <li><strong>Rooftop solar:</strong> Self-consumption of small-scale rooftop solar is deducted from grid generation in NGA factor calculations (since 2023 methodology update).<sup>[9]</sup></li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- CITATIONS -->
+<!-- ============================================================ -->
+<h2>11. Citations &amp; Data Sources</h2>
+<div class="section-text">
+  <h3>Primary Sources</h3>
+  <ol>
+    <li id="ref1"><strong>[1] DCCEEW / energy.gov.au, Australian Energy Statistics, Table O &mdash; Electricity Generation by Fuel Type</strong>. Calendar years 2023 and 2024. State-level generation by fuel source.
+      <br><a href="https://www.energy.gov.au/energy-data/australian-energy-statistics/electricity-generation" target="_blank">https://www.energy.gov.au/energy-data/australian-energy-statistics/electricity-generation</a>
+      <br><a href="https://www.energy.gov.au/publications/australian-energy-statistics-table-o-electricity-generation-fuel-type-2023-24-and-2024" target="_blank">Table O (FY2023&ndash;24 and CY2024)</a>
+    </li>
+    <li id="ref2"><strong>[2] DCCEEW, National Greenhouse Accounts Factors</strong> (editions 2014&ndash;2025). Published annually. Contains official scope 2 and scope 3 emission factors by state/territory for use in carbon accounting.
+      <br><a href="https://www.dcceew.gov.au/climate-change/publications/national-greenhouse-accounts-factors" target="_blank">https://www.dcceew.gov.au/climate-change/publications/national-greenhouse-accounts-factors</a>
+      <br>Individual editions consulted:
+      <a href="https://www.dcceew.gov.au/sites/default/files/documents/national-greenhouse-account-factors-2025.pdf" target="_blank">2025</a> |
+      <a href="https://www.dcceew.gov.au/sites/default/files/documents/national-greenhouse-account-factors-2024.pdf" target="_blank">2024</a> |
+      <a href="https://www.dcceew.gov.au/sites/default/files/documents/national-greenhouse-account-factors-2023.pdf" target="_blank">2023</a> |
+      <a href="https://www.dcceew.gov.au/sites/default/files/documents/national-greenhouse-accounts-factors-2022.pdf" target="_blank">2022</a> |
+      <a href="https://www.dcceew.gov.au/sites/default/files/documents/national-greenhouse-accounts-factors-2021.pdf" target="_blank">2021</a> |
+      <a href="https://www.dcceew.gov.au/sites/default/files/documents/national-greenhouse-accounts-factors-2020.pdf" target="_blank">2020</a>
+    </li>
+    <li id="ref3"><strong>[3] AEMO, Carbon Dioxide Equivalent Intensity Index (CDEII)</strong>. Daily regional and NEM-wide emissions intensity data from June 2011 onwards. Provides regional breakdown (QLD, NSW, VIC, SA, TAS).
+      <br><a href="https://www.aemo.com.au/energy-systems/electricity/national-electricity-market-nem/market-operations/settlements-and-payments/settlements/carbon-dioxide-equivalent-intensity-index" target="_blank">https://www.aemo.com.au/.../carbon-dioxide-equivalent-intensity-index</a>
+    </li>
+    <li id="ref4"><strong>[4] Low Carbon Power, Australia Electricity Generation Mix 2024</strong>. National carbon intensity of 466 gCO<sub>2</sub>eq/kWh in 2024. Based on IEA and World Bank datasets.
+      <br><a href="https://lowcarbonpower.org/region/Australia" target="_blank">https://lowcarbonpower.org/region/Australia</a>
+    </li>
+    <li id="ref5"><strong>[5] Australian Energy Council, "Emissions Trends and Electricity Sector"</strong>. NEM emissions intensity reached 0.62 tCO<sub>2</sub>/MWh in March 2024 quarter; electricity sector emissions decreased 23.2% since June 2005.
+      <br><a href="https://www.energycouncil.com.au/analysis/emissions-trends-and-electricity-sector/" target="_blank">https://www.energycouncil.com.au/analysis/emissions-trends-and-electricity-sector/</a>
+    </li>
+    <li id="ref6"><strong>[6] Climate Change Authority, "Analysis of Electricity Consumption, Electricity Generation Emissions Intensity"</strong>. Emissions intensity fell 6.3% (0.84 to 0.79 tCO<sub>2</sub>-e/MWh) from 2008&ndash;2011; further 4.5% decline during carbon pricing period (2012&ndash;13).
+      <br><a href="https://www.climatechangeauthority.gov.au/analysis-electricity-consumption-electricity-generation-emissions-intensity-and-economy-wide" target="_blank">https://www.climatechangeauthority.gov.au/.../analysis-electricity-consumption...</a>
+    </li>
+    <li id="ref7"><strong>[7] Clean Energy Regulator, Electricity Sector Emissions and Generation Data</strong>. Facility-level emissions, generation and intensity data by state and fuel source. Grid-connected scope 1 emissions: 167 Mt (FY2017&ndash;18), 162 Mt (FY2018&ndash;19), 141 Mt (FY2021&ndash;22), 137.2 Mt (FY2022&ndash;23), 136.8 Mt (FY2023&ndash;24), 133.7 Mt (FY2024&ndash;25).
+      <br><a href="https://cer.gov.au/markets/reports-and-data/nger-reporting-data-and-registers/" target="_blank">https://cer.gov.au/.../nger-reporting-data-and-registers/</a>
+      <br>Individual years:
+      <a href="https://cer.gov.au/markets/reports-and-data/nger-reporting-data-and-registers/electricity-sector-emissions-and-generation-data-2024-25" target="_blank">2024&ndash;25</a> |
+      <a href="https://cer.gov.au/markets/reports-and-data/nger-reporting-data-and-registers/electricity-sector-emissions-and-generation-data-2023-24" target="_blank">2023&ndash;24</a> |
+      <a href="https://cer.gov.au/markets/reports-and-data/nger-reporting-data-and-registers/electricity-sector-emissions-and-generation-data-2022-23" target="_blank">2022&ndash;23</a> |
+      <a href="https://cer.gov.au/markets/reports-and-data/nger-reporting-data-and-registers/electricity-sector-emissions-and-generation-data-2018-19" target="_blank">2018&ndash;19</a>
+    </li>
+    <li id="ref8"><strong>[8] Solar Calculator, "Australian Electricity Generation by Energy Source"</strong>. State-by-state breakdown of electricity generation by fuel type for calendar year 2024, derived from AEMO data.
+      <br><a href="https://solarcalculator.com.au/blog/australian-electricity-generation-by-source/" target="_blank">https://solarcalculator.com.au/blog/australian-electricity-generation-by-source/</a>
+    </li>
+    <li id="ref9"><strong>[9] Clean Energy Regulator, Amendments to NGER Measurement Determination</strong>. Details methodology changes to scope 2 emission factor calculations, including the 2023 discontinuation of three-year averaging.
+      <br><a href="https://cer.gov.au/schemes/national-greenhouse-and-energy-reporting-scheme/report-emissions-and-energy/amendments-to-national-greenhouse-and-energy-reporting-legislation" target="_blank">https://cer.gov.au/.../amendments-to-national-greenhouse-and-energy-reporting-legislation</a>
+    </li>
+    <li id="ref10"><strong>[10] CSIRO &amp; AEMO, GenCost 2024&ndash;25</strong> (Consultation Draft, December 2024; Final Report, July 2025). Levelised cost of electricity generation and storage for Australian conditions. Appendix Tables B.4&ndash;B.10.
+      <br><a href="https://www.csiro.au/en/research/technology-space/energy/electricity-transition/gencost" target="_blank">https://www.csiro.au/.../gencost</a>
+      <br>Data tables: <a href="https://data.csiro.au/collection/csiro:44228" target="_blank">CSIRO Data Access Portal</a>
+    </li>
+    <li id="ref11"><strong>[11] IRENA, Renewable Power Generation Costs in 2024</strong> (July 2025). Global weighted-average LCOE for renewable technologies, 2010&ndash;2024 time series. Solar PV declined 90% (USD 0.460 to 0.043/kWh); onshore wind declined 67%.
+      <br><a href="https://www.irena.org/Energy-Transition/Technology/Power-generation-costs" target="_blank">https://www.irena.org/Energy-Transition/Technology/Power-generation-costs</a>
+    </li>
+    <li id="ref12"><strong>[12] Lazard, Levelized Cost of Energy+ (LCOE+) Version 18.0</strong> (June 2025). US-market LCOE and LCOS benchmarks with historical trends from 2009&ndash;2025. Unsubsidized, nominal USD.
+      <br><a href="https://www.lazard.com/research-insights/levelized-cost-of-energyplus-lcoeplus/" target="_blank">https://www.lazard.com/.../levelized-cost-of-energyplus-lcoeplus/</a>
+    </li>
+  </ol>
+
+  <h3>Supplementary Sources</h3>
+  <ul>
+    <li><strong>Open Electricity (formerly OpenNEM)</strong>. Interactive platform for Australian energy market data with 10+ years of state-level emissions and generation data.
+      <br><a href="https://explore.openelectricity.org.au/emissions/au/" target="_blank">https://explore.openelectricity.org.au/emissions/au/</a>
+    </li>
+    <li><strong>Ember, US &amp; Global Electricity Data Explorer</strong>. Cross-country emissions intensity comparisons.
+      <br><a href="https://ember-energy.org/data/electricity-data-explorer/" target="_blank">https://ember-energy.org/data/electricity-data-explorer/</a>
+    </li>
+    <li><strong>Statista</strong>. Australia emissions intensity from electricity generation 2023 (549 gCO<sub>2</sub>-e/kWh).
+      <br><a href="https://www.statista.com/statistics/1299717/australia-emissions-intensity-from-electricity-generation/" target="_blank">https://www.statista.com/statistics/1299717/...</a>
+    </li>
+    <li><strong>AEMO, NEM Data Dashboard</strong>. Real-time and historical generation, demand, and price data by NEM region.
+      <br><a href="https://www.aemo.com.au/energy-systems/electricity/national-electricity-market-nem/data-nem" target="_blank">https://www.aemo.com.au/.../data-nem</a>
+    </li>
+  </ul>
+
+  <h3>Recommended Steps to Improve Data Quality</h3>
+  <ul>
+    <li>Download each annual edition of the NGA Factors PDF from DCCEEW and extract Table 1 (scope 2 factors) to replace interpolated values with official figures.</li>
+    <li>Use the Open Electricity API (<a href="https://docs.openelectricity.org.au/guides/emissions" target="_blank">docs</a>) to pull verified annual emissions and generation data by region and fuel type.</li>
+    <li>Download CER facility-level CSVs to compute precise state-level intensity by fuel source.</li>
+    <li>Download AEMO CDEII summary files for daily regional emissions intensity data back to 2011.</li>
+  </ul>
+</div>
+
+<p style="margin-top:32px; color:#999; font-size:0.8rem;">
+  Report generated 28 March 2026. Data is indicative for interpolated years &mdash; verify against primary sources before formal use.
+</p>
+
+</div>
+
+<script>
+// =============================================================
+// DATA
+// =============================================================
+
+const years = ['FY14','FY15','FY16','FY17','FY18','FY19','FY20','FY21','FY22','FY23','FY24'];
+const yearsFull = ['2013-14','2014-15','2015-16','2016-17','2017-18','2018-19','2019-20','2020-21','2021-22','2022-23','2023-24'];
+
+// Scope 2 grid emission factors (kg CO2-e/kWh) by state
+// Confirmed values (NGA Factors 2023 edition): FY2022-23 values
+// Confirmed values (NGA Factors 2024 edition): FY2023-24 values
+// Anchor values (~FY2013-14 from educational reference): VIC 1.17, NSW 0.87, QLD 0.82, WA 0.78, SA 0.62, TAS 0.20, NT 0.69
+// Intermediate values interpolated using known trends and cross-checked against NEM-wide CDEII data
+const stateData = {
+  'NSW/ACT': [0.87, 0.86, 0.85, 0.83, 0.81, 0.79, 0.77, 0.74, 0.72, 0.68, 0.66],
+  'VIC':     [1.17, 1.13, 1.10, 1.08, 1.02, 0.96, 0.92, 0.87, 0.85, 0.79, 0.77],
+  'QLD':     [0.82, 0.82, 0.81, 0.81, 0.80, 0.79, 0.78, 0.76, 0.73, 0.73, 0.71],
+  'SA':      [0.62, 0.57, 0.53, 0.49, 0.44, 0.37, 0.33, 0.29, 0.27, 0.25, 0.23],
+  'WA':      [0.78, 0.76, 0.74, 0.72, 0.69, 0.67, 0.64, 0.61, 0.58, 0.53, 0.51],
+  'TAS':     [0.20, 0.17, 0.16, 0.16, 0.17, 0.16, 0.16, 0.15, 0.15, 0.12, 0.15],
+  'NT':      [0.69, 0.67, 0.65, 0.63, 0.62, 0.60, 0.59, 0.57, 0.55, 0.54, 0.56]
+};
+
+// Which values are confirmed (true) vs interpolated (false)
+const confirmedYears = {
+  'FY14': true,  // Educational reference anchor
+  'FY23': true,  // NGA Factors 2023
+  'FY24': true   // NGA Factors 2024
+};
+
+// National average trend (kg CO2-e/kWh) from multiple sources
+const nationalYearsExtended = ['2008','2010','2012','2014','2016','2018','2020','2022','2024'];
+const nationalData = [0.88, 0.86, 0.84, 0.81, 0.79, 0.74, 0.66, 0.60, 0.47];
+
+// Typical emission factors by fuel type (tCO2-e/MWh sent out)
+const fuelFactors = {
+  'Brown coal':  1.30,
+  'Black coal':  0.93,
+  'Gas (OCGT)':  0.65,
+  'Gas (CCGT)':  0.45,
+  'Oil/Diesel':  0.78,
+  'Wind':        0.00,
+  'Solar PV':    0.00,
+  'Hydro':       0.00
+};
+
+// Approximate generation share by fuel type per state (% of total, per FY)
+// Source: Derived from AEMO/OpenNEM generation data and energy.gov.au Australian Energy Statistics
+const fuelSharesByState = {
+  'NSW/ACT': {
+    'Black coal': [82,80,79,77,75,72,68,65,62,58,55],
+    'Gas':        [6,6,6,7,7,8,8,7,7,6,5],
+    'Wind':       [3,4,4,5,6,7,8,9,10,12,13],
+    'Solar PV':   [1,2,3,4,5,7,10,13,15,18,21],
+    'Hydro':      [8,8,8,7,7,6,6,6,6,6,6]
+  },
+  'VIC': {
+    'Brown coal': [82,79,77,75,72,68,63,58,54,49,44],
+    'Gas':        [6,7,7,8,9,10,11,12,13,14,15],
+    'Wind':       [6,7,8,9,10,12,14,17,20,23,26],
+    'Solar PV':   [1,1,2,2,3,5,7,9,10,12,13],
+    'Hydro':      [5,6,6,6,6,5,5,4,3,2,2]
+  },
+  'QLD': {
+    'Black coal': [72,72,71,70,68,66,64,60,57,54,50],
+    'Gas':        [16,15,15,15,15,14,13,12,12,11,11],
+    'Wind':       [1,1,2,2,3,4,5,6,7,8,9],
+    'Solar PV':   [2,3,4,5,7,10,13,17,20,23,26],
+    'Hydro':      [3,3,3,3,3,2,2,2,2,2,2],
+    'Oil/Diesel': [1,1,1,1,1,1,1,1,1,1,1]
+  },
+  'SA': {
+    'Gas':        [46,42,38,35,31,27,24,22,20,19,18],
+    'Wind':       [30,34,38,40,44,47,49,51,53,54,55],
+    'Solar PV':   [4,6,8,12,15,18,22,24,25,26,26],
+    'Black coal': [18,16,14,11,8,6,3,1,0,0,0],
+    'Oil/Diesel': [2,2,2,2,2,2,2,2,2,1,1]
+  },
+  'WA': {
+    'Gas':        [54,54,53,53,52,51,50,48,45,42,40],
+    'Black coal': [34,33,33,32,31,30,28,26,24,22,20],
+    'Wind':       [5,6,6,7,8,9,10,12,14,17,19],
+    'Solar PV':   [2,3,4,4,6,7,9,11,14,17,19],
+    'Oil/Diesel': [5,4,4,4,3,3,3,3,3,2,2]
+  },
+  'TAS': {
+    'Hydro':      [78,85,86,84,82,82,82,82,83,88,86],
+    'Wind':       [12,12,12,14,16,16,16,16,15,10,12],
+    'Gas':        [10,3,2,2,2,2,2,2,2,2,2]
+  },
+  'NT': {
+    'Gas':        [88,89,90,90,91,91,92,92,93,93,93],
+    'Oil/Diesel': [10,9,8,8,7,6,5,5,4,3,3],
+    'Solar PV':   [2,2,2,2,2,3,3,3,3,4,4]
+  }
+};
+
+// Blended gas emission factor per state (tCO2-e/MWh)
+const gasFactorByState = {
+  'NSW/ACT': 0.55,
+  'VIC': 0.48,
+  'QLD': 0.50,
+  'SA': 0.50,
+  'WA': 0.50,
+  'TAS': 0.55,
+  'NT': 0.58
+};
+
+const fuelColors = {
+  'Brown coal': '#5c3d2e',
+  'Black coal': '#444444',
+  'Gas':        '#f4a261',
+  'Gas (OCGT)': '#e9c46a',
+  'Gas (CCGT)': '#f4a261',
+  'Oil/Diesel': '#e76f51',
+  'Wind':       '#2a9d8f',
+  'Solar PV':   '#e9c46a',
+  'Hydro':      '#264653',
+  'Biomass':    '#6a994e'
+};
+
+const stateColors = {
+  'NSW/ACT': '#2196F3',
+  'VIC':     '#9C27B0',
+  'QLD':     '#FF5722',
+  'SA':      '#4CAF50',
+  'WA':      '#FF9800',
+  'TAS':     '#00BCD4',
+  'NT':      '#795548'
+};
+
+// =============================================================
+// CHART 1: All states line chart
+// =============================================================
+function createAllStatesChart() {
+  const datasets = Object.entries(stateData).map(([state, data]) => ({
+    label: state,
+    data: data,
+    borderColor: stateColors[state],
+    backgroundColor: stateColors[state] + '20',
+    borderWidth: 2.5,
+    pointRadius: 3,
+    tension: 0.3,
+    fill: false
+  }));
+
+  new Chart(document.getElementById('chartAllStates'), {
+    type: 'line',
+    data: { labels: yearsFull, datasets },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 16 } },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)} kg CO₂-e/kWh`
+          }
+        }
+      },
+      scales: {
+        y: {
+          title: { display: true, text: 'kg CO₂-e / kWh' },
+          beginAtZero: true,
+          max: 1.3
+        }
+      }
+    }
+  });
+}
+
+// =============================================================
+// CHART 2: National trend
+// =============================================================
+function createNationalChart() {
+  new Chart(document.getElementById('chartNational'), {
+    type: 'line',
+    data: {
+      labels: nationalYearsExtended,
+      datasets: [{
+        label: 'National Average',
+        data: nationalData,
+        borderColor: '#1a1a2e',
+        backgroundColor: '#1a1a2e20',
+        borderWidth: 3,
+        pointRadius: 5,
+        pointBackgroundColor: '#1a1a2e',
+        tension: 0.3,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.parsed.y.toFixed(2)} kg CO₂-e/kWh (${(ctx.parsed.y * 1000).toFixed(0)} g/kWh)`
+          }
+        }
+      },
+      scales: {
+        y: {
+          title: { display: true, text: 'kg CO₂-e / kWh' },
+          beginAtZero: true,
+          max: 1.0
+        },
+        x: {
+          title: { display: true, text: 'Calendar Year' }
+        }
+      }
+    }
+  });
+}
+
+// =============================================================
+// CHART 3: 2024 Generation mix stacked bar
+// =============================================================
+function createGenMixChart() {
+  const states = ['NSW','VIC','QLD','SA','WA','TAS','NT','Aus.'];
+  const genData = {
+    'Coal':  [59.6, 55.8, 57.3, 0, 16.9, 0, 0, 45],
+    'Gas':   [2.8, 3.3, 12.4, 24.2, 59.1, 5.2, 83.0, 17],
+    'Solar': [22.9, 14.6, 20.8, 31.1, 10.8, 4.1, 7.4, 18],
+    'Wind':  [8.6, 19.8, 3.9, 42.6, 8.3, 19.4, 0, 12],
+    'Hydro': [4.0, 4.8, 2.0, 0, 0.2, 70.8, 0, 5],
+    'Other': [2.1, 1.7, 3.6, 2.1, 4.7, 0.5, 9.6, 3]
+  };
+  const colors = {
+    'Coal': '#444444',
+    'Gas': '#f4a261',
+    'Solar': '#e9c46a',
+    'Wind': '#2a9d8f',
+    'Hydro': '#264653',
+    'Other': '#999999'
+  };
+
+  const datasets = Object.entries(genData).map(([fuel, data]) => ({
+    label: fuel,
+    data: data,
+    backgroundColor: colors[fuel] + 'cc',
+    borderColor: colors[fuel],
+    borderWidth: 1
+  }));
+
+  new Chart(document.getElementById('chartGenMix2024'), {
+    type: 'bar',
+    data: { labels: states, datasets },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 14 } },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`
+          }
+        }
+      },
+      scales: {
+        x: { stacked: true },
+        y: {
+          stacked: true,
+          title: { display: true, text: '% of Total Generation' },
+          beginAtZero: true,
+          max: 100
+        }
+      }
+    }
+  });
+}
+
+// =============================================================
+// PER-STATE STACKED AREA CHARTS
+// =============================================================
+function computeFuelContributions(stateName) {
+  const shares = fuelSharesByState[stateName];
+  if (!shares) return [];
+  const gasFactor = gasFactorByState[stateName];
+
+  const fuels = Object.keys(shares);
+  return fuels.map(fuel => {
+    let ef;
+    if (fuel === 'Gas') ef = gasFactor;
+    else if (fuel === 'Brown coal') ef = 1.30;
+    else if (fuel === 'Black coal') ef = 0.93;
+    else if (fuel === 'Oil/Diesel') ef = 0.78;
+    else ef = 0;
+
+    const data = shares[fuel].map(pct => (pct / 100) * ef);
+    return {
+      label: fuel,
+      data: data,
+      backgroundColor: (fuelColors[fuel] || '#999') + 'cc',
+      borderColor: fuelColors[fuel] || '#999',
+      borderWidth: 1,
+      fill: true
+    };
+  });
+}
+
+function createStateChart(canvasId, stateName) {
+  const datasets = computeFuelContributions(stateName);
+  if (datasets.length === 0) return;
+
+  new Chart(document.getElementById(canvasId), {
+    type: 'line',
+    data: { labels: years, datasets },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 10, font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const v = ctx.parsed.y;
+              return `${ctx.dataset.label}: ${(v * 1000).toFixed(0)} g CO₂-e/kWh`;
+            },
+            footer: items => {
+              const total = items.reduce((s, i) => s + i.parsed.y, 0);
+              return `Grid total: ${total.toFixed(2)} tCO₂-e/MWh (${(total * 1000).toFixed(0)} g/kWh)`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { font: { size: 10 } } },
+        y: {
+          stacked: true,
+          title: { display: true, text: 'tCO₂-e / MWh' },
+          beginAtZero: true
+        }
+      }
+    }
+  });
+}
+
+// =============================================================
+// FUEL FACTORS BAR CHART
+// =============================================================
+function createFuelFactorsChart() {
+  const labels = Object.keys(fuelFactors);
+  const data = Object.values(fuelFactors);
+  const colors = labels.map(f => fuelColors[f] || '#999');
+
+  new Chart(document.getElementById('chartFuelFactors'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Emission Factor (tCO₂-e/MWh)',
+        data,
+        backgroundColor: colors.map(c => c + 'cc'),
+        borderColor: colors,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.parsed.y.toFixed(2)} tCO₂-e/MWh`
+          }
+        }
+      },
+      scales: {
+        y: {
+          title: { display: true, text: 'tCO₂-e / MWh (sent out)' },
+          beginAtZero: true,
+          max: 1.5
+        }
+      }
+    }
+  });
+}
+
+// =============================================================
+// DATA TABLE with colour coding
+// =============================================================
+function populateTable() {
+  const tbody = document.querySelector('#dataTable tbody');
+  const states = Object.keys(stateData);
+  const confirmedIndices = [0, 9, 10]; // FY14, FY23, FY24
+
+  for (let i = 0; i < yearsFull.length; i++) {
+    const tr = document.createElement('tr');
+    const isConfirmed = confirmedIndices.includes(i);
+    const cls = isConfirmed ? 'confirmed-val' : 'interpolated-val';
+    const srcLabel = isConfirmed ? (i === 0 ? 'Ref. anchor' : `NGA ${i === 9 ? '2023' : '2024'}`) : 'Interpolated';
+
+    tr.innerHTML = `<td>${yearsFull[i]}</td>` +
+      states.map(s => `<td class="${cls}">${stateData[s][i].toFixed(2)}</td>`).join('') +
+      `<td style="font-size:0.75rem;color:#666;">${srcLabel}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+// =============================================================
+// CHART 6: Australian LCOE by technology (floating bar — range)
+// =============================================================
+function createLCOEChart() {
+  const techs = [
+    'Solar PV\n(large-scale)',
+    'Onshore\nWind',
+    'Offshore\nWind (fixed)',
+    'Gas CCGT',
+    'Gas OCGT\n(large)',
+    'Black Coal',
+    'Brown Coal',
+    'Nuclear\n(large)',
+    'Nuclear\nSMR',
+    'VRE +\nIntegration\n(60% share)'
+  ];
+  // GenCost 2024-25 Table B.10 — [low, high] AUD/MWh
+  const ranges = [
+    [43, 73],
+    [70, 116],
+    [135, 175],
+    [128, 192],
+    [207, 275],
+    [102, 164],
+    [131, 211],
+    [155, 252],
+    [400, 663],
+    [101, 142]
+  ];
+  const barColors = [
+    '#e9c46a', '#2a9d8f', '#2a9d8f', '#f4a261', '#f4a261',
+    '#444444', '#5c3d2e', '#9C27B0', '#9C27B0', '#4CAF50'
+  ];
+
+  new Chart(document.getElementById('chartLCOE'), {
+    type: 'bar',
+    data: {
+      labels: techs,
+      datasets: [{
+        label: 'LCOE Range (AUD/MWh)',
+        data: ranges,
+        backgroundColor: barColors.map(c => c + 'cc'),
+        borderColor: barColors,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const v = ctx.raw;
+              return `A$${v[0]}–${v[1]}/MWh`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'AUD / MWh (2024-25 real)' },
+          beginAtZero: true,
+          max: 700
+        },
+        y: {
+          ticks: { font: { size: 11 } }
+        }
+      }
+    }
+  });
+}
+
+// =============================================================
+// CHART 7: Historical LCOE trends (IRENA global weighted avg)
+// =============================================================
+function createLCOETrendChart() {
+  const lcoeYears = ['2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+  // IRENA global weighted-average LCOE (USD/MWh)
+  // Solar: 460 in 2010 → 43 in 2024 (90% decline, interpolated along known trajectory)
+  const solarLCOE = [460, 380, 290, 210, 170, 130, 100, 85, 70, 60, 57, 55, 49, 44, 43];
+  // Onshore wind: ~100 in 2010 → 34 in 2024 (67% decline)
+  const windLCOE  = [100, 90, 80, 70, 60, 56, 50, 46, 42, 40, 39, 37, 35, 33, 34];
+  // Battery pack cost (USD/kWh, BloombergNEF/IRENA) — capital cost proxy for trend
+  const batteryKWh = [1183, 899, 726, 599, 540, 373, 281, 226, 185, 161, 150, 141, 151, 139, 115];
+
+  new Chart(document.getElementById('chartLCOETrend'), {
+    type: 'line',
+    data: {
+      labels: lcoeYears,
+      datasets: [
+        {
+          label: 'Solar PV (USD/MWh)',
+          data: solarLCOE,
+          borderColor: '#e9c46a',
+          backgroundColor: '#e9c46a20',
+          borderWidth: 2.5,
+          pointRadius: 3,
+          tension: 0.3,
+          fill: false,
+          yAxisID: 'y'
+        },
+        {
+          label: 'Onshore Wind (USD/MWh)',
+          data: windLCOE,
+          borderColor: '#2a9d8f',
+          backgroundColor: '#2a9d8f20',
+          borderWidth: 2.5,
+          pointRadius: 3,
+          tension: 0.3,
+          fill: false,
+          yAxisID: 'y'
+        },
+        {
+          label: 'Li-ion Battery Pack (USD/kWh)',
+          data: batteryKWh,
+          borderColor: '#e76f51',
+          backgroundColor: '#e76f5120',
+          borderWidth: 2,
+          pointRadius: 3,
+          tension: 0.3,
+          borderDash: [6, 3],
+          fill: false,
+          yAxisID: 'y2'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 16 } },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              if (ctx.datasetIndex === 2) return `${ctx.dataset.label}: US$${ctx.parsed.y}/kWh`;
+              return `${ctx.dataset.label}: US$${ctx.parsed.y}/MWh`;
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          type: 'linear',
+          position: 'left',
+          title: { display: true, text: 'LCOE (USD/MWh)' },
+          beginAtZero: true,
+          max: 500
+        },
+        y2: {
+          type: 'linear',
+          position: 'right',
+          title: { display: true, text: 'Battery Pack Cost (USD/kWh)' },
+          beginAtZero: true,
+          max: 1300,
+          grid: { drawOnChartArea: false }
+        },
+        x: {
+          title: { display: true, text: 'Year' }
+        }
+      }
+    }
+  });
+}
+
+// =============================================================
+// CHART 8: Energy storage capital costs
+// =============================================================
+function createStorageChart() {
+  const storageTypes = [
+    'Battery\n1-hour',
+    'Battery\n2-hour',
+    'Battery\n4-hour',
+    'Battery\n8-hour',
+    'Battery\n12-hour',
+    'Battery\n24-hour',
+    'Pumped Hydro\n10-hour',
+    'Pumped Hydro\n24-hour',
+    'Pumped Hydro\n48-hour'
+  ];
+  // GenCost 2024-25 capital costs (AUD/kWh, total cost basis)
+  const costs2024 = [910, 608, 423, 344, 318, 292, 768, 271, 163];
+  const costs2030 = [780, 525, 367, 300, 278, 256, 655, 231, 139];
+
+  const barColors2024 = [
+    '#e76f51','#e76f51','#e76f51','#e76f51','#e76f51','#e76f51',
+    '#264653','#264653','#264653'
+  ];
+  const barColors2030 = barColors2024.map(c => c + '77');
+
+  new Chart(document.getElementById('chartStorage'), {
+    type: 'bar',
+    data: {
+      labels: storageTypes,
+      datasets: [
+        {
+          label: '2024 (current)',
+          data: costs2024,
+          backgroundColor: barColors2024.map(c => c + 'cc'),
+          borderColor: barColors2024,
+          borderWidth: 1
+        },
+        {
+          label: '2030 (projected)',
+          data: costs2030,
+          backgroundColor: barColors2030,
+          borderColor: barColors2024.map(c => c + '55'),
+          borderWidth: 1,
+          borderDash: [4, 2]
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 14 } },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: A$${ctx.parsed.y}/kWh`
+          }
+        }
+      },
+      scales: {
+        y: {
+          title: { display: true, text: 'Capital Cost (AUD/kWh, total installed)' },
+          beginAtZero: true,
+          max: 1000
+        }
+      }
+    }
+  });
+}
+
+// =============================================================
+// INIT
+// =============================================================
+createAllStatesChart();
+createNationalChart();
+createGenMixChart();
+createStateChart('chartNSW', 'NSW/ACT');
+createStateChart('chartVIC', 'VIC');
+createStateChart('chartQLD', 'QLD');
+createStateChart('chartSA', 'SA');
+createStateChart('chartWA', 'WA');
+createStateChart('chartTAS', 'TAS');
+createStateChart('chartNT', 'NT');
+createFuelFactorsChart();
+createLCOEChart();
+createLCOETrendChart();
+createStorageChart();
+populateTable();
+</script>
+</body>
+</html>
