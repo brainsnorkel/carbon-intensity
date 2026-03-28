@@ -299,7 +299,7 @@
   <div class="chart-card full-width">
     <h3>LCOE Range by Generation Technology (AUD/MWh, 2024&ndash;25) <span class="source-tag verified">CSIRO GenCost</span></h3>
     <canvas id="chartLCOE"></canvas>
-    <p class="legend-note">Source: CSIRO GenCost 2024&ndash;25, Appendix Table B.10. Ranges reflect variation in capacity factor assumptions. Discount rate 5.99%. Solar and wind are standalone (no storage); &ldquo;VRE + Integration&rdquo; includes firming costs at 60% variable renewable share. All values in real 2024&ndash;25 AUD.<sup>[10]</sup></p>
+    <p class="legend-note">Source: CSIRO GenCost 2024&ndash;25, Appendix Table B.10. Ranges reflect variation in capacity factor assumptions. Discount rate 5.99%. Solar and wind are standalone (no storage); &ldquo;VRE + Integration&rdquo; (VRE = Variable Renewable Energy, i.e. wind and solar whose output fluctuates with weather) includes firming costs at 60% variable renewable share. All values in real 2024&ndash;25 AUD.<sup>[10]</sup></p>
   </div>
 </div>
 
@@ -926,7 +926,7 @@ function createLCOEChart() {
     'Brown Coal',
     'Nuclear\n(large)',
     'Nuclear\nSMR',
-    'VRE +\nIntegration\n(60% share)'
+    'VRE* +\nIntegration\n(60% share)'
   ];
   // GenCost 2024-25 Table B.10 — [low, high] AUD/MWh
   const ranges = [
